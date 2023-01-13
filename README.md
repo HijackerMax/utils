@@ -1,2 +1,2 @@
-# geographical-utils
-Set of geographical utils
+# utils
+Set of utils for boilerplate code
