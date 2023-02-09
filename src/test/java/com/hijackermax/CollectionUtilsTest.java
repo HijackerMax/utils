@@ -146,9 +146,7 @@ class CollectionUtilsTest {
 
     @Test
     void testMapFunction() {
-        List<String> mappedList = Optional.of(List.of(1, 2, 3, 4, 5, 6, 11))
-                .map(CollectionUtils.map(String::valueOf))
-                .orElse(Collections.emptyList());
+        List<String> mappedList = CollectionUtils.map(String::valueOf).apply(List.of(1, 2, 3, 4, 5, 6, 11));
         assertEquals(7, mappedList.size());
         assertEquals("1", mappedList.get(0));
         assertEquals("11", mappedList.get(6));

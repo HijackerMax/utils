@@ -27,8 +27,22 @@ class OptionalUtilsTest {
 
     @Test
     void testOfInstanceFunction() {
-        assertTrue(Optional.of(128).flatMap(OptionalUtils.ofInstance(Integer.class)).isPresent());
-        assertFalse(Optional.of(128).flatMap(OptionalUtils.ofInstance(Double.class)).isPresent());
-        assertEquals(128, Optional.of(128).flatMap(OptionalUtils.ofInstance(Integer.class)).orElseThrow());
+        assertTrue(OptionalUtils.ofInstance(Integer.class).apply(128).isPresent());
+        assertFalse(OptionalUtils.ofInstance(Double.class).apply(128).isPresent());
+        assertEquals(128, OptionalUtils.ofInstance(Integer.class).apply(128).orElseThrow());
+    }
+
+    @Test
+    void testOfEmpty() {
+        assertTrue(OptionalUtils.ofEmpty(null).isEmpty());
+        assertTrue(OptionalUtils.ofEmpty("").isEmpty());
+        assertTrue(OptionalUtils.ofEmpty("Test").isPresent());
+    }
+
+    @Test
+    void testOfBlank() {
+        assertTrue(OptionalUtils.ofBlank(null).isEmpty());
+        assertTrue(OptionalUtils.ofBlank(" ").isEmpty());
+        assertTrue(OptionalUtils.ofBlank("Test").isPresent());
     }
 }

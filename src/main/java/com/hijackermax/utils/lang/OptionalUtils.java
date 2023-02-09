@@ -44,18 +44,44 @@ public final class OptionalUtils {
     }
 
     /**
-     * Returns an {@code Optional} describing the first non-{@code null} element of given {@link Collection}, if
-     * {@link Collection} has first non-{@code null} element, otherwise returns an empty {@link Optional}.
+     * Returns an {@code Optional} describing the first non-null element of given {@link Collection}, if
+     * {@link Collection} has first non-null element, otherwise returns an empty {@link Optional}.
      *
-     * @param collection {@link Collection} which first non-{@code null} element is requested
+     * @param collection {@link Collection} which first non-null element is requested
      * @param <T>        input collection elements type
-     * @return an {@link Optional} with a present first non-{@code null} element if the specified input collection
-     * is not empty or {@code null} or has some non-{@code null} element, otherwise an empty {@link Optional}
+     * @return an {@link Optional} with a present first non-null element if the specified input collection
+     * is not empty or null or has some non-null element, otherwise an empty {@link Optional}
      * @since 0.0.1
      */
     public static <T> Optional<T> ofFirst(Collection<T> collection) {
         return CollectionUtils.isEmpty(collection) ? Optional.empty() : collection.stream()
                 .filter(Objects::nonNull)
                 .findFirst();
+    }
+
+    /**
+     * Returns an {@link Optional} describing the given value, if
+     * value is not empty or null, otherwise returns an empty {@link Optional}.
+     *
+     * @param value the value to describe, which must be not empty or null
+     * @return an {@link Optional} with a present value if the specified value
+     * is not empty or null, otherwise an empty {@link Optional}
+     * @since 0.0.1
+     */
+    public static Optional<String> ofEmpty(String value) {
+        return StringUtils.isEmpty(value) ? Optional.empty() : Optional.of(value);
+    }
+
+    /**
+     * Returns an {@link Optional} describing the given value, if
+     * value is not blank, empty or null, otherwise returns an empty {@link Optional}.
+     *
+     * @param value the value to describe, which must be not blank, empty or null
+     * @return an {@link Optional} with a present value if the specified value
+     * is not blank, empty or null, otherwise an empty {@link Optional}
+     * @since 0.0.1
+     */
+    public static Optional<String> ofBlank(String value) {
+        return StringUtils.isBlank(value) ? Optional.empty() : Optional.of(value);
     }
 }

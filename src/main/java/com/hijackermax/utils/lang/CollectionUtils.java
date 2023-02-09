@@ -70,7 +70,8 @@ public final class CollectionUtils {
     }
 
     /**
-     * Returns filtered with {@link Predicate} stream of objects from input {@link Collection} if it is not null or empty, or empty stream
+     * Returns filtered with {@link Predicate} stream of objects
+     * from input {@link Collection} if it is not null or empty, or empty stream
      *
      * @param input  source collection
      * @param filter {@link Predicate} for input type objects
@@ -116,7 +117,8 @@ public final class CollectionUtils {
      * @param <V>            value type
      * @since 0.0.1
      */
-    public static <K, V> void safeForEach(Map<K, V> input, BiConsumer<K, V> valuesConsumer) {
+    public static <K, V> void safeForEach(Map<? extends K, ? extends V> input,
+                                          BiConsumer<? super K, ? super V> valuesConsumer) {
         if (isNotEmpty(input)) {
             input.forEach(valuesConsumer);
         }
@@ -130,7 +132,7 @@ public final class CollectionUtils {
      * @param <V>            value type
      * @since 0.0.1
      */
-    public static <V> void safeForEach(Collection<V> input, Consumer<V> valuesConsumer) {
+    public static <V> void safeForEach(Collection<? extends V> input, Consumer<? super V> valuesConsumer) {
         if (isNotEmpty(input)) {
             input.forEach(valuesConsumer);
         }
@@ -149,7 +151,8 @@ public final class CollectionUtils {
     }
 
     /**
-     * Maps input {@link Collection} with provided mapper {@link Function} or returns empty list if input {@link Collection} is null
+     * Maps input {@link Collection} with provided mapper
+     * {@link Function} or returns empty list if input {@link Collection} is null
      *
      * @param input  source {@link Collection}
      * @param mapper mapping {@link Function}
@@ -158,14 +161,15 @@ public final class CollectionUtils {
      * @return {@link ArrayList} of mapped entities
      * @since 0.0.1
      */
-    public static <I, O> List<O> map(Collection<I> input, Function<I, O> mapper) {
+    public static <I, O> List<O> map(Collection<? extends I> input, Function<? super I, ? extends O> mapper) {
         return safeStreamOf(input)
                 .map(mapper)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Maps input {@link Collection} with provided mapper {@link Function} and sorts elements according to the provided {@link Comparator} or returns empty list if input {@link Collection} is null
+     * Maps input {@link Collection} with provided mapper {@link Function} and sorts elements
+     * according to the provided {@link Comparator} or returns empty list if input {@link Collection} is null
      *
      * @param input      source {@link Collection}
      * @param mapper     mapping {@link Function}
@@ -175,7 +179,9 @@ public final class CollectionUtils {
      * @return {@link ArrayList} of mapped entities
      * @since 0.0.1
      */
-    public static <I, O> List<O> mapSorted(Collection<I> input, Function<I, O> mapper, Comparator<O> comparator) {
+    public static <I, O> List<O> mapSorted(Collection<? extends I> input,
+                                           Function<? super I, ? extends O> mapper,
+                                           Comparator<? super O> comparator) {
         return safeStreamOf(input)
                 .map(mapper)
                 .sorted(comparator)
@@ -183,7 +189,8 @@ public final class CollectionUtils {
     }
 
     /**
-     * Filters input {@link Collection} with provided {@link Predicate} and maps with provided mapper {@link Function} or returns empty list if input {@link Collection} is null
+     * Filters input {@link Collection} with provided {@link Predicate} and maps
+     * with provided mapper {@link Function} or returns empty list if input {@link Collection} is null
      *
      * @param input  source {@link Collection}
      * @param mapper mapping {@link Function}
@@ -193,14 +200,18 @@ public final class CollectionUtils {
      * @return {@link ArrayList} of filtered and mapped entities
      * @since 0.0.1
      */
-    public static <I, O> List<O> filterAndMap(Collection<I> input, Predicate<I> filter, Function<I, O> mapper) {
-        return safeFilteredStreamOf(input, filter)
+    public static <I, O> List<O> filterAndMap(Collection<? extends I> input,
+                                              Predicate<? super I> filter,
+                                              Function<? super I, ? extends O> mapper) {
+        return safeStreamOf(input)
+                .filter(filter)
                 .map(mapper)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Maps input {@link Collection} with provided mapper {@link Function} or provides empty list if input {@link Collection} is null
+     * Maps input {@link Collection} with provided mapper {@link Function}
+     * or provides empty list if input {@link Collection} is null
      *
      * @param input    source {@link Collection}
      * @param mapper   mapping {@link Function}
@@ -209,12 +220,15 @@ public final class CollectionUtils {
      * @param <O>      output type
      * @since 0.0.1
      */
-    public static <I, O> void map(Collection<I> input, Function<I, O> mapper, Consumer<List<O>> consumer) {
+    public static <I, O> void map(Collection<? extends I> input,
+                                  Function<? super I, ? extends O> mapper,
+                                  Consumer<List<? extends O>> consumer) {
         consumer.accept(map(input, mapper));
     }
 
     /**
-     * Maps input {@link Collection} with provided mapper {@link Function} or provides empty list if input {@link Collection} is null
+     * Maps input {@link Collection} with provided mapper {@link Function} or
+     * provides empty list if input {@link Collection} is null
      *
      * @param mapper mapping {@link Function}
      * @param <I>    input type
@@ -227,7 +241,8 @@ public final class CollectionUtils {
     }
 
     /**
-     * Filters input {@link Collection} with provided {@link Predicate} or returns empty list if input {@link Collection} is null
+     * Filters input {@link Collection} with provided {@link Predicate}
+     * or returns empty list if input {@link Collection} is null
      *
      * @param input     {@link Collection} that should be filtered
      * @param predicate {@link Predicate} for input type objects
@@ -235,19 +250,22 @@ public final class CollectionUtils {
      * @return {@link ArrayList} of filtered entities
      * @since 0.0.1
      */
-    public static <I> List<I> filter(Collection<I> input, Predicate<I> predicate) {
-        return safeFilteredStreamOf(input, predicate)
+    public static <I> List<I> filter(Collection<? extends I> input, Predicate<? super I> predicate) {
+        return safeStreamOf(input)
+                .filter(predicate)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Conducts null-safe check if left input {@link Collection} contains all elements from right input {@link Collection}
+     * Conducts null-safe check if left input {@link Collection}
+     * contains all elements from right input {@link Collection}
      *
      * @param left  {@link Collection} that should be checked if contains all elements from right collection
      * @param right {@link Collection} that should be tested
      * @param <I>   input type
-     * @return {@code true} if left {@link Collection} contains all elements from right {@link Collection} or both collections are null,
-     * {@code false} if left {@link Collection} does not contains all elements from right {@link Collection} or one of the collections is null
+     * @return true if left {@link Collection} contains all elements from right {@link Collection}
+     * or both collections are null, {@code false} if left {@link Collection} does not contains all elements
+     * from right {@link Collection} or one of the collections is null
      * @since 0.0.1
      */
     public static <I> boolean safeContainsAll(Collection<I> left, Collection<I> right) {
@@ -278,18 +296,19 @@ public final class CollectionUtils {
      * @since 0.0.1
      */
     public static <I> List<I> union(Collection<? extends I> left, Collection<? extends I> right) {
-        return Stream.concat(safeStreamOf(left), safeStreamOf(right)).collect(Collectors.toList());
+        return Stream.concat(safeStreamOf(left), safeStreamOf(right))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Returns first non-{@code null} element from input {@link Collection}
+     * Returns first non-null element from input {@link Collection}
      *
      * @param collection input {@link Collection}
      * @param <I>        input collection elements type
      * @return first element in collection or null if collections is empty or null
      * @since 0.0.1
      */
-    public static <I> I first(Collection<I> collection) {
+    public static <I> I first(Collection<? extends I> collection) {
         return isEmpty(collection) ? null : collection.stream()
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -297,13 +316,14 @@ public final class CollectionUtils {
     }
 
     /**
-     * Conducts null-safe check if left input {@link Collection} and right input {@link Collection} have all same elements,
+     * Conducts null-safe check if left input {@link Collection}
+     * and right input {@link Collection} have all same elements,
      * order of elements is ignored
      *
      * @param left  fist input {@link Collection}
      * @param right second input {@link Collection}
      * @param <I>   input collection elements type
-     * @return {@code true} if both {@link Collection} have same elements inside,
+     * @return true if both {@link Collection} have same elements inside,
      * {@code false} if there is a difference in elements
      * @since 0.0.1
      */
@@ -322,7 +342,8 @@ public final class CollectionUtils {
      * @param right subtrahend input {@link Collection}
      * @param <I>   input collection elements type
      * @return {@link ArrayList} consisting of elements that are present in left input {@link Collection}
-     * but missing in right input {@link Collection} or right input {@link Collection} is null, or empty immutable list if left collection is null
+     * but missing in right input {@link Collection} or right input {@link Collection} is null,
+     * or empty immutable list if left collection is null
      * @since 0.0.1
      */
     public static <I> List<I> subtract(Collection<I> left, Collection<I> right) {
@@ -341,7 +362,8 @@ public final class CollectionUtils {
      * @param left  input {@link Collection}
      * @param right input {@link Collection}
      * @param <I>   input collection elements type
-     * @return {@link ArrayList} consisting of common elements of input collections, or empty immutable list if one of the collections is null
+     * @return {@link ArrayList} consisting of common elements of input collections,
+     * or empty immutable list if one of the collections is null
      * @since 0.0.1
      */
     public static <I> List<I> intersection(Collection<I> left, Collection<I> right) {
@@ -360,8 +382,10 @@ public final class CollectionUtils {
      * @param left               input {@link Collection}
      * @param right              input {@link Collection}
      * @param differenceConsumer {@link BiConsumer} consumer of two {@link ArrayList},
-     *                           first contains elements that are present in the left input {@link Collection} but missing in the right input {@link Collection},
-     *                           second contains elements that are present in the right input {@link Collection} but missing in the left input {@link Collection}
+     *                           first contains elements that are present in the left input {@link Collection}
+     *                           but missing in the right input {@link Collection},
+     *                           second contains elements that are present in the right input {@link Collection}
+     *                           but missing in the left input {@link Collection}
      * @param <I>                input collection elements type
      * @since 0.0.1
      */
@@ -419,14 +443,17 @@ public final class CollectionUtils {
      * @return resulting {@link Map}
      * @since 0.0.1
      */
-    public static <K, V> Map<K, V> toMap(Collection<V> values, Function<V, K> keyExtractor, BinaryOperator<V> mergeFunction) {
+    public static <K, V> Map<K, V> toMap(Collection<? extends V> values,
+                                         Function<? super V, ? extends K> keyExtractor,
+                                         BinaryOperator<V> mergeFunction) {
         return safeStreamOf(values)
                 .filter(value -> Objects.nonNull(keyExtractor.apply(value)))
                 .collect(Collectors.toMap(keyExtractor, Function.identity(), mergeFunction));
     }
 
     /**
-     * Conducts null-safe conversion of input {@link Collection} to {@link Map} using provided key extractor {@link Function}
+     * Conducts null-safe conversion of input {@link Collection} to {@link Map}
+     * using provided key extractor {@link Function}
      * and value extractor {@link Function}
      *
      * @param values         input {@link Collection}
@@ -438,15 +465,17 @@ public final class CollectionUtils {
      * @return resulting {@link Map}
      * @since 0.0.1
      */
-    public static <K, V, X> Map<K, X> toMap(Collection<V> values, Function<V, K> keyExtractor, Function<V, X> valueExtractor) {
+    public static <K, V, X> Map<K, X> toMap(Collection<? extends V> values,
+                                            Function<? super V, ? extends K> keyExtractor,
+                                            Function<? super V, ? extends X> valueExtractor) {
         return safeStreamOf(values)
                 .filter(value -> Objects.nonNull(keyExtractor.apply(value)))
                 .collect(Collectors.toMap(keyExtractor, valueExtractor));
     }
 
     /**
-     * Conducts null-safe conversion of input {@link Collection} to {@link Map} using provided key extractor {@link Function},
-     * ignores values with key duplicates
+     * Conducts null-safe conversion of input {@link Collection} to {@link Map}
+     * using provided key extractor {@link Function}, ignores values with key duplicates
      *
      * @param values       input {@link Collection}
      * @param keyExtractor {@link Function} for key extraction
@@ -455,13 +484,14 @@ public final class CollectionUtils {
      * @return resulting {@link Map}
      * @since 0.0.1
      */
-    public static <K, V> Map<K, V> toMap(Collection<V> values, Function<V, K> keyExtractor) {
+    public static <K, V> Map<K, V> toMap(Collection<? extends V> values,
+                                         Function<? super V, ? extends K> keyExtractor) {
         return toMap(values, keyExtractor, (a, b) -> a);
     }
 
     /**
-     * Conducts null-safe conversion of input {@link Collection} to {@link Map} with multiple values with duplicating keys
-     * using provided key extractor {@link Function},
+     * Conducts null-safe conversion of input {@link Collection} to {@link Map}
+     * with multiple values with duplicating keys using provided key extractor {@link Function}
      *
      * @param values       input {@link Collection}
      * @param keyExtractor {@link Function} for key extraction
@@ -470,7 +500,8 @@ public final class CollectionUtils {
      * @return resulting {@link Map}
      * @since 0.0.1
      */
-    public static <K, V> Map<K, List<V>> toMultiMap(Collection<V> values, Function<V, K> keyExtractor) {
+    public static <K, V> Map<K, List<V>> toMultiMap(Collection<? extends V> values,
+                                                    Function<? super V, ? extends K> keyExtractor) {
         return safeStreamOf(values)
                 .filter(value -> Objects.nonNull(keyExtractor.apply(value)))
                 .collect(Collectors.groupingBy(keyExtractor, Collectors.toList()));
@@ -486,7 +517,8 @@ public final class CollectionUtils {
      * @return filtered {@link Map} with swapped keys and values
      * @since 0.0.1
      */
-    public static <K, V> Map<V, K> reverseMap(Map<K, V> input, Predicate<V> valuePredicate) {
+    public static <K, V> Map<V, K> reverseMap(Map<? extends K, ? extends V> input,
+                                              Predicate<? super V> valuePredicate) {
         return safeStreamOf(input)
                 .filter(e -> valuePredicate.test(e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
@@ -501,7 +533,7 @@ public final class CollectionUtils {
      * @return {@link Map} with swapped keys and values
      * @since 0.0.1
      */
-    public static <K, V> Map<V, K> reverseMap(Map<K, V> input) {
+    public static <K, V> Map<V, K> reverseMap(Map<? extends K, ? extends V> input) {
         return safeStreamOf(input)
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
