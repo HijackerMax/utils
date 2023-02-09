@@ -8,7 +8,7 @@
     <artifactId>utils</artifactId>
     <version>0.0.1</version>
 
-    <name>utils</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>A set of utils that can help in app development</description>
     <url>https://github.com/HijackerMax/utils</url>
 
@@ -16,6 +16,7 @@
         <developer>
             <name>Maksym Kogut aka HijackerMax</name>
             <email>me@hijackermax.com</email>
+            <organization>HijackerMax</organization>
             <organizationUrl>https://hijackermax.com</organizationUrl>
         </developer>
     </developers>
