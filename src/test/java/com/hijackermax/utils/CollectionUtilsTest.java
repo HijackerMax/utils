@@ -1,4 +1,4 @@
-package com.hijackermax;
+package com.hijackermax.utils;
 
 import com.hijackermax.utils.entities.Single;
 import com.hijackermax.utils.entities.Tuple;

@@ -1,4 +1,4 @@
-package com.hijackermax;
+package com.hijackermax.utils;
 
 import com.hijackermax.utils.lang.StringUtils;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.hijackermax;
+package com.hijackermax.utils;
 
 import com.hijackermax.utils.geography.GeographicalUtils;
 import com.hijackermax.utils.models.MercatorCoordinates;
