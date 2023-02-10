@@ -14,6 +14,31 @@ public final class StringUtils {
      */
     public static final String EMPTY = "";
 
+    /**
+     * Blank {@link String} constant
+     */
+    public static final String BLANK = " ";
+
+    /**
+     * At {@link String} constant
+     */
+    public static final String AT = "@";
+
+    /**
+     * Semicolon {@link String} constant
+     */
+    public static final String SEMICOLON = ";";
+
+    /**
+     * Comma {@link String} constant
+     */
+    public static final String COMMA = ",";
+
+    /**
+     * Period {@link String} constant
+     */
+    public static final String PERIOD = ".";
+
     private StringUtils() {
     }
 
@@ -71,6 +96,18 @@ public final class StringUtils {
      */
     public static boolean safeEndsWith(String source, String suffix) {
         return StringUtils.isNotEmpty(source) && StringUtils.isNotEmpty(suffix) && source.endsWith(suffix);
+    }
+
+    /**
+     * Checks if {@link String} is not empty and contains provided char sequence
+     *
+     * @param source {@link String} to check
+     * @param value  {@link CharSequence} searchable char sequence
+     * @return true if {@link String} is not empty and contains provided {@link CharSequence}, otherwise false
+     * @since 0.0.2
+     */
+    public static boolean safeContains(String source, CharSequence value) {
+        return StringUtils.isNotEmpty(source) && Objects.nonNull(value) && source.contains(value);
     }
 
     /**
@@ -166,5 +203,58 @@ public final class StringUtils {
      */
     public static String trimToEmpty(String source) {
         return isEmpty(source) ? EMPTY : source.trim();
+    }
+
+    /**
+     * Pads left provided source {@link String} with provided filler {@link String} provided amount of times
+     * if source {@link String} is shorter than required
+     *
+     * @param source         {@link String} to be padded
+     * @param requiredLength {@link Integer} that represents required length of resulting {@link String}
+     * @param filler         {@link String} which can be used to extend source {@link String}
+     * @return padded {@link String} with provided filler {@link String} provided amount of times
+     * if source {@link String} is shorter than required,
+     * if source {@link String} is longer or has same length as required returns source {@link String} without changes,
+     * if source {@link String} or filler {@link String} is null returns null
+     * @since 0.0.2
+     */
+    public static String padLeft(String source, int requiredLength, String filler) {
+        return pad(source, requiredLength, filler, false);
+    }
+
+    /**
+     * Pads right provided source {@link String} with provided filler {@link String} provided amount of times
+     * if source {@link String} is shorter than required
+     *
+     * @param source         {@link String} to be padded
+     * @param requiredLength {@link Integer} that represents required length of resulting {@link String}
+     * @param filler         {@link String} which can be used to extend source {@link String}
+     * @return padded {@link String} with provided filler {@link String} provided amount of times
+     * if source {@link String} is shorter than required,
+     * if source {@link String} is longer or has same length as required returns source {@link String} without changes,
+     * if source {@link String} or filler {@link String} is null returns null
+     * @since 0.0.2
+     */
+    public static String padRight(String source, int requiredLength, String filler) {
+        return pad(source, requiredLength, filler, true);
+    }
+
+    private static String pad(String source, int requiredLength, String filler, boolean appendToEnd) {
+        if (Objects.isNull(source) || Objects.isNull(filler)) {
+            return null;
+        }
+        int sourceLength = source.length();
+        int fillerLength = filler.length();
+        int diff = requiredLength - sourceLength;
+        if (diff <= 0) {
+            return source;
+        }
+        char[] missingChars = new char[diff];
+        char[] fillerChars = filler.toCharArray();
+        for (int i = 0; i < diff; ++i) {
+            missingChars[i] = fillerChars[i % fillerLength];
+        }
+        String missingStringPart = new String(missingChars);
+        return appendToEnd ? source.concat(missingStringPart) : missingStringPart.concat(source);
     }
 }

@@ -21,6 +21,16 @@ class StringUtilsTest {
     }
 
     @Test
+    void testSafeContains() {
+        assertFalse(StringUtils.safeContains(null, null));
+        assertFalse(StringUtils.safeContains("Foo", null));
+        assertTrue(StringUtils.safeContains("Foo", "oo"));
+        assertTrue(StringUtils.safeContains("Foo", "o"));
+        assertTrue(StringUtils.safeContains("Foo", "Foo"));
+        assertFalse(StringUtils.safeContains("Bar", "rr"));
+    }
+
+    @Test
     void testIsEmpty() {
         assertTrue(StringUtils.isEmpty(null));
         assertTrue(StringUtils.isEmpty(""));
@@ -131,5 +141,31 @@ class StringUtilsTest {
                 "1 $ 0 $ 46 $ 7 $ 22 $ 55 $ 33",
                 of(sourceList).map(StringUtils.join(" $ ", String::valueOf)).orElseThrow()
         );
+    }
+
+    @Test
+    void testPadLeft() {
+        assertNull(StringUtils.padLeft(null, 10, "Test"));
+        assertNull(StringUtils.padLeft("Test", 10, null));
+        assertNull(StringUtils.padLeft(null, 10, null));
+        assertEquals("Hello", StringUtils.padLeft("Hello", 2, "#$@"));
+        assertEquals("Hello", StringUtils.padLeft("Hello", -20, "#$@"));
+        assertEquals("#$@#$Hello", StringUtils.padLeft("Hello", 10, "#$@"));
+        assertEquals("#Hello", StringUtils.padLeft("Hello", 6, "#$@"));
+        assertEquals("  Hello", StringUtils.padLeft("Hello", 7, " "));
+        assertEquals("       ", StringUtils.padLeft(StringUtils.EMPTY, 7, " "));
+    }
+
+    @Test
+    void testPadRight() {
+        assertNull(StringUtils.padRight(null, 10, "Test"));
+        assertNull(StringUtils.padRight("Test", 10, null));
+        assertNull(StringUtils.padRight(null, 10, null));
+        assertEquals("Hello", StringUtils.padRight("Hello", 2, "#$@"));
+        assertEquals("Hello", StringUtils.padRight("Hello", -20, "#$@"));
+        assertEquals("Hello#$@#$", StringUtils.padRight("Hello", 10, "#$@"));
+        assertEquals("Hello#", StringUtils.padRight("Hello", 6, "#$@"));
+        assertEquals("Hello  ", StringUtils.padRight("Hello", 7, " "));
+        assertEquals("       ", StringUtils.padRight(StringUtils.EMPTY, 7, " "));
     }
 }

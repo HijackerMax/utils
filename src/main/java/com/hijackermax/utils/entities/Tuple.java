@@ -7,6 +7,7 @@ import java.util.Objects;
  *
  * @param <K> key type
  * @param <V> value type
+ * @since 0.0.1
  */
 public class Tuple<K, V> extends Single<V> {
     private K key;

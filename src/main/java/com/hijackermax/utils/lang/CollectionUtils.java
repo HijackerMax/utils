@@ -537,4 +537,17 @@ public final class CollectionUtils {
         return safeStreamOf(input)
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
+
+    /**
+     * Conducts null-safe removal of elements that satisfy the given predicate from provided {@link Collection}
+     *
+     * @param collection input {@link Collection}
+     * @param filter     {@link Predicate} for values that should be removed if satisfied
+     * @param <V>        value type
+     * @return true if any elements were removed, false if collection is null or no elements were removed
+     * @since 0.0.2
+     */
+    public static <V> boolean safeRemoveIf(Collection<? extends V> collection, Predicate<? super V> filter) {
+        return Objects.nonNull(collection) && collection.removeIf(filter);
+    }
 }

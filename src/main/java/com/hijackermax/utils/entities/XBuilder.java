@@ -8,6 +8,7 @@ import java.util.function.Supplier;
  * Helper class, provides ability to build instance of type T without implemented builder
  *
  * @param <T> item type
+ * @since 0.0.1
  */
 public class XBuilder<T> {
     private final T entity;

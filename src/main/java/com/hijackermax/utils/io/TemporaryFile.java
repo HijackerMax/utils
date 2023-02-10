@@ -9,19 +9,37 @@ import java.util.UUID;
 
 /**
  * Closeable wrapper for temporary files that can be used with try-with-resources
+ *
+ * @since 0.0.1
  */
 public class TemporaryFile implements Closeable {
     private static final String FILE_NAME_SUFFIX = ".tmp";
     private final File file;
 
     /**
-     * Create temporary file with provided contents and new instance of Temporary file wrapper class
+     * Create temporary file with provided contents and wraps it with new instance of Temporary file wrapper class
      *
      * @param fileContent contents of temporary file
-     * @throws IOException in case of temporary file creation issus
+     * @throws IOException in case of temporary file creation issues
+     * @since 0.0.1
      */
     public TemporaryFile(byte[] fileContent) throws IOException {
         file = File.createTempFile(String.valueOf(UUID.randomUUID()), FILE_NAME_SUFFIX);
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(fileContent);
+        }
+    }
+
+    /**
+     * Create temporary file with provided contents and extension and wraps it with new instance of Temporary file wrapper class
+     *
+     * @param fileContent contents of temporary file
+     * @param nameSuffix  extension of temporary file
+     * @throws IOException in case of temporary file creation issues
+     * @since 0.0.2
+     */
+    public TemporaryFile(byte[] fileContent, String nameSuffix) throws IOException {
+        file = File.createTempFile(String.valueOf(UUID.randomUUID()), nameSuffix);
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(fileContent);
         }

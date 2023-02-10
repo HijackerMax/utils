@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  * Simple value wrapper
  * @param <V> value type
+ * @since 0.0.1
  */
 public class Single<V> {
     private V value;

@@ -341,4 +341,16 @@ class CollectionUtilsTest {
         assertTrue(nullKeyMap.containsKey(null));
         assertEquals(List.of("Test"), nullKeyMap.get(null));
     }
+
+    @Test
+    void testSafeRemoveIf() {
+        assertFalse(CollectionUtils.safeRemoveIf(null, Objects::nonNull));
+        assertFalse(CollectionUtils.safeRemoveIf(new ArrayList<>(), Objects::nonNull));
+        assertFalse(CollectionUtils.safeRemoveIf(new ArrayList<>(List.of(1, 2, 3, 4, 5)), v -> v > 5));
+        ArrayList<Integer> integers = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+        boolean isRemoved = CollectionUtils.safeRemoveIf(integers, v -> v < 5);
+        assertTrue(isRemoved);
+        assertEquals(1, integers.size());
+        assertEquals(5, integers.get(0));
+    }
 }

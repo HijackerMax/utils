@@ -7,6 +7,7 @@ import com.hijackermax.utils.models.WSG84Coordinates;
  * Set of utility methods that can help to work with coordinates
  */
 public final class GeographicalUtils {
+    private static final double EARTH_RADIUS = 6371e3;
     private static final double MERCATOR_BOUNDARY = 20037508.342789244;
 
     private GeographicalUtils() {
@@ -41,5 +42,24 @@ public final class GeographicalUtils {
         double x = longitude * MERCATOR_BOUNDARY / 180;
         double y = Math.log(Math.tan((90 + latitude) * Math.PI / 360)) / (Math.PI / 180);
         return new MercatorCoordinates(x, y * MERCATOR_BOUNDARY / 180);
+    }
+
+    /**
+     * Calculates distance between two {@link WSG84Coordinates} points using Haversine formula
+     *
+     * @param pointOne first {@link WSG84Coordinates} point
+     * @param pointTwo second {@link WSG84Coordinates} point
+     * @return distance between two provided points
+     * @since 0.0.2
+     */
+    public static double wsg84Distance(WSG84Coordinates pointOne, WSG84Coordinates pointTwo) {
+        double radLatitudeX = Math.toRadians(pointOne.getLatitude());
+        double radLatitudeY = Math.toRadians(pointTwo.getLatitude());
+
+        double longitudeDiff =  Math.toRadians(pointTwo.getLongitude()) - Math.toRadians(pointOne.getLongitude());
+        double latitudeDiff = radLatitudeY - radLatitudeX;
+        double a = Math.pow(Math.sin(latitudeDiff / 2), 2)
+                + Math.cos(radLatitudeX) * Math.cos(radLatitudeY) * Math.pow(Math.sin(longitudeDiff / 2), 2);
+        return 2 * Math.asin(Math.sqrt(a)) * EARTH_RADIUS;
     }
 }
