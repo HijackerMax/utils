@@ -13,3 +13,13 @@ A set of utils that can help in app development
 
 #### String Utils
 * Null-safe methods to work with Strings
+
+### How to use it
+Just add this to your **pom.xml**
+```
+<dependency>
+    <groupId>com.hijackermax</groupId>
+    <artifactId>utils</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
