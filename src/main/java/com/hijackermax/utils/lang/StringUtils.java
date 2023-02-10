@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
  * Set of utility methods that can help to work with Strings
  */
 public final class StringUtils {
+    /**
+     * Empty {@link String} constant
+     */
     public static final String EMPTY = "";
 
     private StringUtils() {

@@ -18,11 +18,11 @@ public final class OptionalUtils {
      * Returns an {@link Optional} describing the given value, if
      * value is instance of provided class, otherwise returns an empty {@link Optional}.
      *
-     * @param value       the possible instance of type <T>
+     * @param value       the possible instance of type T
      * @param targetClass {@link Class} that should be used to check {@param value}
      * @param <T>         target class type
      * @return an {@link Optional} with a present value if the specified value
-     * is instance of type <T>, otherwise an empty {@link Optional}
+     * is instance of type T, otherwise an empty {@link Optional}
      * @since 0.0.1
      */
     public static <T> Optional<T> ofInstance(Object value, Class<T> targetClass) {
@@ -36,7 +36,7 @@ public final class OptionalUtils {
      * @param targetClass {@link Class} that should be used to check input value
      * @param <T>         input value type
      * @return {@link Function} that accepts value and returns an {@link Optional} with a present value if the specified value
-     * is instance of type <T>, otherwise an empty {@link Optional}
+     * is instance of type T, otherwise an empty {@link Optional}
      * @since 0.0.1
      */
     public static <T> Function<Object, Optional<T>> ofInstance(Class<T> targetClass) {
