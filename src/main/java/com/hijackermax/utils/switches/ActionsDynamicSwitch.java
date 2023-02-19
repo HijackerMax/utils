@@ -1,4 +1,4 @@
-package com.hijackermax.utils.entities;
+package com.hijackermax.utils.switches;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,23 +7,23 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 /**
- * Dynamic switch
+ * Actions dynamic switch
  *
  * @param <T> type of case values
  * @param <V> type of evaluated expression
  * @since 0.0.2
  */
-public class DynamicSwitch<T, V> {
+public class ActionsDynamicSwitch<T, V> {
     private final Map<T, Runnable> cases = new HashMap<>();
     private final BiPredicate<V, T> valuesPredicate;
     private Runnable onDefault = () -> {
     };
 
-    private DynamicSwitch() {
+    private ActionsDynamicSwitch() {
         this(Object::equals);
     }
 
-    private DynamicSwitch(BiPredicate<V, T> valuesPredicate) {
+    private ActionsDynamicSwitch(BiPredicate<V, T> valuesPredicate) {
         this.valuesPredicate = Objects.requireNonNull(valuesPredicate);
     }
 
@@ -32,10 +32,10 @@ public class DynamicSwitch<T, V> {
      *
      * @param <T> type of case values
      * @param <V> type of evaluated expression
-     * @return DynamicSwitch with {@code Object.equals} {@link BiPredicate}
+     * @return {@link ActionsDynamicSwitch} with {@code Object.equals} {@link BiPredicate}
      */
-    public static <T, V> DynamicSwitch<T, V> builder() {
-        return new DynamicSwitch<>();
+    public static <T, V> ActionsDynamicSwitch<T, V> builder() {
+        return new ActionsDynamicSwitch<>();
     }
 
     /**
@@ -44,10 +44,10 @@ public class DynamicSwitch<T, V> {
      * @param valuesComparator {@link BiPredicate} which compares case values with expression
      * @param <T>              type of case values
      * @param <V>              type of evaluated expression
-     * @return DynamicSwitch with custom {@link BiPredicate}
+     * @return {@link ActionsDynamicSwitch} with custom {@link BiPredicate}
      */
-    public static <T, V> DynamicSwitch<T, V> builder(BiPredicate<V, T> valuesComparator) {
-        return new DynamicSwitch<>(valuesComparator);
+    public static <T, V> ActionsDynamicSwitch<T, V> builder(BiPredicate<V, T> valuesComparator) {
+        return new ActionsDynamicSwitch<>(valuesComparator);
     }
 
     /**
@@ -55,9 +55,9 @@ public class DynamicSwitch<T, V> {
      *
      * @param value    case value
      * @param runnable {@link Runnable} that should be executed if provided case value and expression satisfy switch {@link BiPredicate}
-     * @return DynamicSwitch
+     * @return {@link ActionsDynamicSwitch}
      */
-    public DynamicSwitch<T, V> addCase(T value, Runnable runnable) {
+    public ActionsDynamicSwitch<T, V> addCase(T value, Runnable runnable) {
         cases.put(Objects.requireNonNull(value), runnable);
         return this;
     }
@@ -67,9 +67,9 @@ public class DynamicSwitch<T, V> {
      *
      * @param runnable {@link Runnable} that should be executed
      *                 if none of the provided case values and expression satisfy switch {@link BiPredicate}
-     * @return DynamicSwitch
+     * @return {@link ActionsDynamicSwitch}
      */
-    public DynamicSwitch<T, V> addDefault(Runnable runnable) {
+    public ActionsDynamicSwitch<T, V> addDefault(Runnable runnable) {
         this.onDefault = Objects.requireNonNull(runnable);
         return this;
     }
