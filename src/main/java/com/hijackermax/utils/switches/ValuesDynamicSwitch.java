@@ -31,9 +31,10 @@ public class ValuesDynamicSwitch<T, V, R> {
     /**
      * Builds switch with default values {@link BiPredicate} which compares two objects with {@code Object.equals}
      *
-     * @param <T> type of case values
-     * @param <V> type of evaluated expression
-     * @param <R> type of result value
+     * @param defaultValue value that will be used if no match was found among provided cases
+     * @param <T>          type of case values
+     * @param <V>          type of evaluated expression
+     * @param <R>          type of result value
      * @return {@link ValuesDynamicSwitch} with {@code Object.equals} {@link BiPredicate}
      */
     public static <T, V, R> ValuesDynamicSwitch<T, V, R> builder(R defaultValue) {
@@ -44,6 +45,7 @@ public class ValuesDynamicSwitch<T, V, R> {
      * Builds switch with custom values {@link BiPredicate}
      *
      * @param valuesComparator {@link BiPredicate} which compares case values with expression
+     * @param defaultValue     value that will be used if no match was found among provided cases
      * @param <T>              type of case values
      * @param <V>              type of evaluated expression
      * @param <R>              type of result value
@@ -66,10 +68,10 @@ public class ValuesDynamicSwitch<T, V, R> {
     }
 
     /**
-     * Conducts switch operation on provided expression, if provided expression is null,
-     * or it does not satisfy any of case values default value will be returned
+     * Conducts switch operation on provided expression
      *
      * @param value expression that should be switched
+     * @return value of case that satisfied provided expression, otherwise default value will be returned
      */
     public R doSwitch(V value) {
         Predicate<T> casesPredicate = k ->
