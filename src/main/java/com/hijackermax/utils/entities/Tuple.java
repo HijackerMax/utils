@@ -1,6 +1,10 @@
 package com.hijackermax.utils.entities;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Simple key:value pair wrapper
@@ -54,6 +58,35 @@ public class Tuple<K, V> extends Single<V> {
      */
     public boolean containsKey() {
         return key != null;
+    }
+
+    /**
+     * Provides non-null key to the provided {@link Consumer}
+     *
+     * @param keyConsumer {@link Consumer} of non-null key
+     */
+    public void provideKeyIfPresent(Consumer<K> keyConsumer) {
+        ofNullable(key).ifPresent(keyConsumer);
+    }
+
+    /**
+     * Provides key and value to the provided {@link BiConsumer}
+     *
+     * @param tupleConsumer {@link BiConsumer} of key and value
+     */
+    public void provideTuple(BiConsumer<K, V> tupleConsumer) {
+        tupleConsumer.accept(key, getValue());
+    }
+
+    /**
+     * Provides non-null key and non-null value to the provided {@link BiConsumer}
+     *
+     * @param tupleConsumer {@link BiConsumer} of non-null key and non-null value
+     */
+    public void provideTupleIfPresent(BiConsumer<K, V> tupleConsumer) {
+        if (Objects.nonNull(key) && Objects.nonNull(getValue())) {
+            tupleConsumer.accept(key, getValue());
+        }
     }
 
     /**

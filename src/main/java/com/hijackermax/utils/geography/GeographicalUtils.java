@@ -53,10 +53,29 @@ public final class GeographicalUtils {
      * @since 0.0.2
      */
     public static double wsg84Distance(WSG84Coordinates pointOne, WSG84Coordinates pointTwo) {
-        double radLatitudeX = Math.toRadians(pointOne.getLatitude());
-        double radLatitudeY = Math.toRadians(pointTwo.getLatitude());
+        return wsg84Distance(
+                pointOne.getLatitude(),
+                pointOne.getLongitude(),
+                pointTwo.getLatitude(),
+                pointTwo.getLongitude()
+        );
+    }
 
-        double longitudeDiff =  Math.toRadians(pointTwo.getLongitude()) - Math.toRadians(pointOne.getLongitude());
+    /**
+     * Calculates distance between two WSG84 points using Haversine formula
+     *
+     * @param latitudeX  first point latitude
+     * @param longitudeX first point longitude
+     * @param latitudeY  second point latitude
+     * @param longitudeY second point longitude
+     * @return distance between two provided points
+     * @since 0.0.3
+     */
+    public static double wsg84Distance(double latitudeX, double longitudeX, double latitudeY, double longitudeY) {
+        double radLatitudeX = Math.toRadians(latitudeX);
+        double radLatitudeY = Math.toRadians(latitudeY);
+
+        double longitudeDiff = Math.toRadians(longitudeY) - Math.toRadians(longitudeX);
         double latitudeDiff = radLatitudeY - radLatitudeX;
         double a = Math.pow(Math.sin(latitudeDiff / 2), 2)
                 + Math.cos(radLatitudeX) * Math.cos(radLatitudeY) * Math.pow(Math.sin(longitudeDiff / 2), 2);

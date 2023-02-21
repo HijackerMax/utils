@@ -1,9 +1,16 @@
 package com.hijackermax.utils.lang;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Set of utility methods that can help to work with Strings
@@ -38,6 +45,16 @@ public final class StringUtils {
      * Period {@link String} constant
      */
     public static final String PERIOD = ".";
+
+    /**
+     * Dash {@link String} constant
+     */
+    public static final String DASH = "-";
+
+    /**
+     * Underscore {@link String} constant
+     */
+    public static final String UNDERSCORE = "_";
 
     private StringUtils() {
     }
@@ -256,5 +273,43 @@ public final class StringUtils {
         }
         String missingStringPart = new String(missingChars);
         return appendToEnd ? source.concat(missingStringPart) : missingStringPart.concat(source);
+    }
+
+    /**
+     * Compresses source {@link String} using GZIP and encodes it with Base64
+     *
+     * @param source {@link String} that needs to be compressed
+     * @return compressed with GZIP and encoded with Base64 {@link String} or empty {@link String} if source is empty or null
+     * @throws IOException in case of problems during source {@link String} compression
+     * @since 0.0.3
+     */
+    public static String compress(String source) throws IOException {
+        if (isEmpty(source)) {
+            return EMPTY;
+        }
+        try (var outputStream = new ByteArrayOutputStream(); var gzOutputStream = new GZIPOutputStream(outputStream)) {
+            gzOutputStream.write(source.getBytes(StandardCharsets.UTF_8));
+            gzOutputStream.finish();
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        }
+    }
+
+    /**
+     * Decodes source {@link String} from Base64 and decompresses it with GZIP
+     *
+     * @param source {@link String} that needs to be decompressed
+     * @return decoded from Base64 and decompressed with GZIP {@link String} or empty {@link String} if source is empty or null
+     * @throws IOException in case of problems during source {@link String} decompression
+     * @since 0.0.3
+     */
+    public static String decompress(String source) throws IOException {
+        if (isEmpty(source)) {
+            return EMPTY;
+        }
+        byte[] bytes = Base64.getDecoder().decode(source);
+        try (var byteArrayInputStream = new ByteArrayInputStream(bytes);
+             var inputStream = new GZIPInputStream(byteArrayInputStream)) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

@@ -1,9 +1,13 @@
 package com.hijackermax.utils.entities;
 
 import java.util.Objects;
+import java.util.function.Consumer;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Simple value wrapper
+ *
  * @param <V> value type
  * @since 0.0.1
  */
@@ -18,6 +22,7 @@ public class Single<V> {
 
     /**
      * Creates instance of {@link Single} with provided value
+     *
      * @param value that should be wrapped
      */
     public Single(V value) {
@@ -26,6 +31,7 @@ public class Single<V> {
 
     /**
      * Compares value of this instance of {@link Single} with null
+     *
      * @return true if value is not null, otherwise false
      */
     public boolean containsValue() {
@@ -34,6 +40,7 @@ public class Single<V> {
 
     /**
      * Returns value of this instance of {@link Single}
+     *
      * @return value
      */
     public V getValue() {
@@ -42,10 +49,20 @@ public class Single<V> {
 
     /**
      * Sets value to this instance of {@link Single}
+     *
      * @param value new value
      */
     public void setValue(V value) {
         this.value = value;
+    }
+
+    /**
+     * Provides non-null value to the provided {@link Consumer}
+     *
+     * @param valueConsumer {@link Consumer} of non-null value
+     */
+    public void provideValueIfPresent(Consumer<V> valueConsumer) {
+        ofNullable(value).ifPresent(valueConsumer);
     }
 
     @Override

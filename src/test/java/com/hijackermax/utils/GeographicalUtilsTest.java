@@ -33,4 +33,15 @@ class GeographicalUtilsTest {
         );
         assertEquals(13905.03255420155, distance, DELTA);
     }
+
+    @Test
+    void testWSG84DistanceRaw() {
+        double distance = GeographicalUtils.wsg84Distance(
+                38.91167766492829,
+                1.4274606756656105,
+                38.98253411357968,
+                1.2949727629945995
+        );
+        assertEquals(13905.03255420155, distance, DELTA);
+    }
 }

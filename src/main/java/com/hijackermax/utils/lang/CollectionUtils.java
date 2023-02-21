@@ -550,4 +550,31 @@ public final class CollectionUtils {
     public static <V> boolean safeRemoveIf(Collection<? extends V> collection, Predicate<? super V> filter) {
         return Objects.nonNull(collection) && collection.removeIf(filter);
     }
+
+    /**
+     * Splits {@link Map.Entry} to key-value pair, so it can be processed by any compatible {@link BiFunction}
+     *
+     * @param processor {@link BiFunction} that supports types of key and value from {@link Map.Entry}
+     * @param <K>       key type
+     * @param <V>       value type
+     * @param <R>       {@link BiFunction} result type
+     * @return {@link Function} that accepts {@link Map.Entry} and returns result of {@link BiFunction} work
+     * @since 0.0.3
+     */
+    public static <K, V, R> Function<Map.Entry<K, V>, R> split(BiFunction<? super K, ? super V, ? extends R> processor) {
+        return entry -> processor.apply(entry.getKey(), entry.getValue());
+    }
+
+    /**
+     * Splits {@link Map.Entry} to key-value pair, so it can be evaluated by any compatible {@link BiPredicate}
+     *
+     * @param predicate {@link BiPredicate} that supports types of key and value from {@link Map.Entry}
+     * @param <K>       key type
+     * @param <V>       value type
+     * @return {@link Predicate} that accepts {@link Map.Entry} and returns result of {@link BiPredicate} evaluation
+     * @since 0.0.3
+     */
+    public static <K, V> Predicate<Map.Entry<K, V>> splitPredicate(BiPredicate<? super K, ? super V> predicate) {
+        return entry -> predicate.test(entry.getKey(), entry.getValue());
+    }
 }

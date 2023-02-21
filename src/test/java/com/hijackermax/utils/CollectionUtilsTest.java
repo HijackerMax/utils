@@ -6,7 +6,9 @@ import com.hijackermax.utils.lang.CollectionUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -352,5 +354,47 @@ class CollectionUtilsTest {
         assertTrue(isRemoved);
         assertEquals(1, integers.size());
         assertEquals(5, integers.get(0));
+    }
+
+    @Test
+    void testSplit() {
+        Map<Integer, Integer> sourceMap = Map.of(
+                11, 32,
+                7, 3,
+                1, 2,
+                21, 99
+        );
+
+        List<Integer> result = sourceMap.entrySet().stream()
+                .map(CollectionUtils.split(Integer::sum))
+                .sorted()
+                .collect(Collectors.toList());
+
+        assertEquals(4, result.size());
+        assertEquals(3, result.get(0));
+        assertEquals(120, result.get(3));
+    }
+
+    @Test
+    void testSplitPredicate() {
+        Map<Integer, Integer> sourceMap = Map.of(
+                11, 32,
+                7, 3,
+                1, 2,
+                21, 99
+        );
+
+        BiPredicate<Integer, Integer> isEvenSum = (k, v) ->
+                (k + v) % 2 == 0;
+
+        List<Integer> result = sourceMap.entrySet().stream()
+                .filter(CollectionUtils.splitPredicate(isEvenSum))
+                .map(CollectionUtils.split(Integer::sum))
+                .sorted()
+                .collect(Collectors.toList());
+
+        assertEquals(2, result.size());
+        assertEquals(10, result.get(0));
+        assertEquals(120, result.get(1));
     }
 }

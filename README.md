@@ -21,12 +21,28 @@ Licensed under the Apache 2.0 License
 #### String Utils
 * Null-safe methods to work with Strings
 
+#### Object utils
+* Methods that can help work with objects
+
+#### Functional interfaces
+* TriConsumer
+* TriFunction
+* TriPredicate
+* QuadConsumer
+* QuadFunction
+* QuadPredicate
+
+#### Wrappers
+* Single
+* Tuple
+* Triple
+
 ### How to use it
 Just add this to your **pom.xml**
 ```xml
 <dependency>
     <groupId>com.hijackermax</groupId>
     <artifactId>utils</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```

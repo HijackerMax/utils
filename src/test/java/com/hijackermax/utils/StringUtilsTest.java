@@ -3,9 +3,12 @@ package com.hijackermax.utils;
 import com.hijackermax.utils.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.*;
@@ -167,5 +170,16 @@ class StringUtilsTest {
         assertEquals("Hello#", StringUtils.padRight("Hello", 6, "#$@"));
         assertEquals("Hello  ", StringUtils.padRight("Hello", 7, " "));
         assertEquals("       ", StringUtils.padRight(StringUtils.EMPTY, 7, " "));
+    }
+
+    @Test
+    void testCompressDecompress() throws IOException {
+        String testString = IntStream.range(0, 5000)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining());
+        String compressedString = StringUtils.compress(testString);
+        assertTrue(compressedString.length() < testString.length());
+        String decompressedString = StringUtils.decompress(compressedString);
+        assertEquals(testString, decompressedString);
     }
 }
