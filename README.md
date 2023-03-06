@@ -24,6 +24,18 @@ Licensed under the Apache 2.0 License
 #### Object utils
 * Methods that can help work with objects
 
+#### Boolean utils
+* Methods that can help work with booleans
+
+#### Date utils
+* Methods that can help work with dates
+
+#### Math utils
+* Methods that can help with computations
+
+#### Random utils
+* Methods that can provide some random values or randomize arrays
+
 #### Functional interfaces
 * TriConsumer
 * TriFunction
@@ -43,6 +55,6 @@ Just add this to your **pom.xml**
 <dependency>
     <groupId>com.hijackermax</groupId>
     <artifactId>utils</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 </dependency>
 ```

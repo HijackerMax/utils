@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -178,9 +179,34 @@ class CollectionUtilsTest {
     void testUnion() {
         assertEquals(2, CollectionUtils.union(Collections.singletonList(1), Collections.singletonList(2)).size());
         assertEquals(1, CollectionUtils.union(Collections.singletonList(1), null).size());
-        List<Integer> unionList = CollectionUtils.union(Collections.singletonList(2), List.of(1, 3, 4, 5));
+        List<Integer> unionList = CollectionUtils.union(Collections.singletonList(2), List.of(1, 3, 4, 5, 5));
+        assertEquals(6, unionList.size());
+        assertTrue(unionList.containsAll(List.of(1, 2, 3, 4, 5)));
+    }
+
+    @Test
+    void testDistinctUnion() {
+        assertEquals(2, CollectionUtils.distinctUnion(Collections.singletonList(1), Collections.singletonList(2)).size());
+        assertEquals(1, CollectionUtils.distinctUnion(Collections.singletonList(1), null).size());
+        List<Integer> unionList = CollectionUtils.distinctUnion(Collections.singletonList(2), List.of(1, 3, 4, 5, 5));
         assertEquals(5, unionList.size());
         assertTrue(unionList.containsAll(List.of(1, 2, 3, 4, 5)));
+    }
+
+    @Test
+    void testNestedUnion() {
+        assertEquals(0, CollectionUtils.union(null).size());
+        List<Integer> union = CollectionUtils.union(Set.of(List.of(1, 2, 4), List.of(3), Set.of(5, 21)));
+        assertEquals(6, union.size());
+        assertTrue(union.containsAll(List.of(1, 2, 3, 4, 5, 21)));
+    }
+
+    @Test
+    void testNestedDistinctUnion() {
+        assertEquals(0, CollectionUtils.distinctUnion(null).size());
+        List<Integer> union = CollectionUtils.distinctUnion(List.of(List.of(1, 2, 4), List.of(3), Set.of(5, 21, 1, 3)));
+        assertEquals(6, union.size());
+        assertTrue(union.containsAll(List.of(1, 2, 3, 4, 5, 21)));
     }
 
     @Test
@@ -396,5 +422,55 @@ class CollectionUtilsTest {
         assertEquals(2, result.size());
         assertEquals(10, result.get(0));
         assertEquals(120, result.get(1));
+    }
+
+    @Test
+    void testKeyPredicate() {
+        Map<Integer, Integer> sourceMap = Map.of(
+                11, 32,
+                2, 3,
+                1, 2,
+                32, 99
+        );
+
+        List<Integer> result = sourceMap.entrySet().stream()
+                .filter(CollectionUtils.keyPredicate(k -> k % 2 == 0))
+                .map(Map.Entry::getKey)
+                .sorted()
+                .collect(Collectors.toList());
+
+        assertEquals(2, result.size());
+        assertEquals(2, result.get(0));
+        assertEquals(32, result.get(1));
+    }
+
+    @Test
+    void testValuePredicate() {
+        Map<Integer, Integer> sourceMap = Map.of(
+                11, 24,
+                2, 3,
+                1, 2,
+                32, 99
+        );
+
+        List<Integer> result = sourceMap.entrySet().stream()
+                .filter(CollectionUtils.valuePredicate(v -> v % 2 == 0))
+                .map(Map.Entry::getValue)
+                .sorted()
+                .collect(Collectors.toList());
+
+        assertEquals(2, result.size());
+        assertEquals(2, result.get(0));
+        assertEquals(24, result.get(1));
+    }
+
+    @Test
+    void testToStringCollector() {
+        char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+        String result = IntStream.range(0, chars.length)
+                .mapToObj(idx -> chars[idx])
+                .collect(CollectionUtils.toStringCollector());
+        assertEquals(chars.length, result.length());
     }
 }

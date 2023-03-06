@@ -3,6 +3,7 @@ package com.hijackermax.utils;
 import com.hijackermax.utils.lang.OptionalUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,14 @@ class OptionalUtilsTest {
         assertTrue(OptionalUtils.ofEmpty(null).isEmpty());
         assertTrue(OptionalUtils.ofEmpty("").isEmpty());
         assertTrue(OptionalUtils.ofEmpty("Test").isPresent());
+    }
+
+    @Test
+    void testOfEmptyCollection() {
+        assertTrue(OptionalUtils.ofEmptyCollection(null).isEmpty());
+        assertTrue(OptionalUtils.ofEmptyCollection(Collections.emptyList()).isEmpty());
+        assertTrue(OptionalUtils.ofEmptyCollection(List.of("Test")).isPresent());
+        assertTrue(OptionalUtils.ofEmptyCollection(List.of("Test", "Foo")).map(l -> l.get(0)).isPresent());
     }
 
     @Test

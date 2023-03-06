@@ -84,4 +84,19 @@ public final class OptionalUtils {
     public static Optional<String> ofBlank(String value) {
         return StringUtils.isBlank(value) ? Optional.empty() : Optional.of(value);
     }
+
+    /**
+     * Returns an {@link Optional} describing the given value, if
+     * value is not empty or null, otherwise returns an empty {@link Optional}.
+     *
+     * @param value the value to describe, which must be not empty or null
+     * @param <T>   input collection elements type
+     * @param <C>   input collection type
+     * @return an {@link Optional} with a present value if the specified value
+     * is not empty or null, otherwise an empty {@link Optional}
+     * @since 0.0.4
+     */
+    public static <T, C extends Collection<T>> Optional<C> ofEmptyCollection(C value) {
+        return CollectionUtils.isEmpty(value) ? Optional.empty() : Optional.of(value);
+    }
 }

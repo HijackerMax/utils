@@ -301,6 +301,52 @@ public final class CollectionUtils {
     }
 
     /**
+     * Creates null-safe distinct union of two input {@link Collection}
+     *
+     * @param left  fist input {@link Collection}
+     * @param right second input {@link Collection}
+     * @param <I>   input collection elements type
+     * @return {@link ArrayList} consisting of distinct elements from both collections
+     * @since 0.0.4
+     */
+    public static <I> List<I> distinctUnion(Collection<? extends I> left, Collection<? extends I> right) {
+        return Stream.concat(safeStreamOf(left), safeStreamOf(right))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Creates null-safe union of input {@link Collection} that contains multiple {@link Collection}
+     *
+     * @param collections input {@link Collection} of collections
+     * @param <I>         input collection children collections elements type
+     * @return {@link ArrayList} consisting of elements from child collections
+     * @since 0.0.4
+     */
+    public static <I> List<I> union(Collection<Collection<? extends I>> collections) {
+        return safeStreamOf(collections)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Creates null-safe distinct union of input {@link Collection} that contains multiple {@link Collection}
+     *
+     * @param collections input {@link Collection} of collections
+     * @param <I>         input collection children collections elements type
+     * @return {@link ArrayList} consisting of distinct elements from child collections
+     * @since 0.0.4
+     */
+    public static <I> List<I> distinctUnion(Collection<Collection<? extends I>> collections) {
+        return safeStreamOf(collections)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Returns first non-null element from input {@link Collection}
      *
      * @param collection input {@link Collection}
@@ -576,5 +622,46 @@ public final class CollectionUtils {
      */
     public static <K, V> Predicate<Map.Entry<K, V>> splitPredicate(BiPredicate<? super K, ? super V> predicate) {
         return entry -> predicate.test(entry.getKey(), entry.getValue());
+    }
+
+    /**
+     * Provides {@link Predicate} for {@link Map.Entry} that wraps {@link Predicate} for key
+     *
+     * @param predicate {@link Predicate} that supports key type from {@link Map.Entry}
+     * @param <K>       key type
+     * @param <V>       value type
+     * @return {@link Predicate} that accepts {@link Map.Entry} and returns result of key {@link Predicate} evaluation
+     * @since 0.0.4
+     */
+    public static <K, V> Predicate<Map.Entry<K, V>> keyPredicate(Predicate<? super K> predicate) {
+        return entry -> predicate.test(entry.getKey());
+    }
+
+    /**
+     * Provides {@link Predicate} for {@link Map.Entry} that wraps {@link Predicate} for value
+     *
+     * @param predicate {@link Predicate} that supports value type from {@link Map.Entry}
+     * @param <K>       key type
+     * @param <V>       value type
+     * @return {@link Predicate} that accepts {@link Map.Entry} and returns result of value {@link Predicate} evaluation
+     * @since 0.0.4
+     */
+    public static <K, V> Predicate<Map.Entry<K, V>> valuePredicate(Predicate<? super V> predicate) {
+        return entry -> predicate.test(entry.getValue());
+    }
+
+    /**
+     * Provides toString {@link Collector} for stream of {@link Character}
+     *
+     * @return {@link Collector} which concatenates {@link Character} elements in encounter order
+     * @since 0.0.4
+     */
+    public static Collector<Character, ?, String> toStringCollector() {
+        return Collector.of(
+                StringBuffer::new,
+                StringBuffer::append,
+                StringBuffer::append,
+                StringBuffer::toString
+        );
     }
 }
