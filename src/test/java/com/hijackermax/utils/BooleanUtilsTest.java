@@ -74,4 +74,58 @@ class BooleanUtilsTest {
         assertEquals(Boolean.FALSE, BooleanUtils.parseBoolean("0"));
         assertEquals(Boolean.FALSE, BooleanUtils.parseBoolean("off"));
     }
+
+    @Test
+    void testIsBoolean() {
+        assertFalse(BooleanUtils.isBoolean(null));
+        assertFalse(BooleanUtils.isBoolean(StringUtils.EMPTY));
+        assertFalse(BooleanUtils.isBoolean(StringUtils.BLANK));
+        assertFalse(BooleanUtils.isBoolean("Foo"));
+        assertFalse(BooleanUtils.isBoolean("Bar"));
+        assertFalse(BooleanUtils.isBoolean("tru"));
+        assertFalse(BooleanUtils.isBoolean("yep"));
+        assertFalse(BooleanUtils.isBoolean("true 1"));
+        assertFalse(BooleanUtils.isBoolean(",true"));
+
+        assertTrue(BooleanUtils.isBoolean("true"));
+        assertTrue(BooleanUtils.isBoolean("t"));
+        assertTrue(BooleanUtils.isBoolean("y"));
+        assertTrue(BooleanUtils.isBoolean("yes"));
+        assertTrue(BooleanUtils.isBoolean("1"));
+        assertTrue(BooleanUtils.isBoolean("on"));
+        assertTrue(BooleanUtils.isBoolean("false"));
+        assertTrue(BooleanUtils.isBoolean("f"));
+        assertTrue(BooleanUtils.isBoolean("n"));
+        assertTrue(BooleanUtils.isBoolean("no"));
+        assertTrue(BooleanUtils.isBoolean("0"));
+        assertTrue(BooleanUtils.isBoolean("off"));
+        assertTrue(BooleanUtils.isBoolean("true "));
+    }
+
+    @Test
+    void testIsNotBoolean() {
+        assertFalse(BooleanUtils.isNotBoolean("true"));
+        assertFalse(BooleanUtils.isNotBoolean("t"));
+        assertFalse(BooleanUtils.isNotBoolean("y"));
+        assertFalse(BooleanUtils.isNotBoolean("yes"));
+        assertFalse(BooleanUtils.isNotBoolean("1"));
+        assertFalse(BooleanUtils.isNotBoolean("on"));
+        assertFalse(BooleanUtils.isNotBoolean("false"));
+        assertFalse(BooleanUtils.isNotBoolean("f"));
+        assertFalse(BooleanUtils.isNotBoolean("n"));
+        assertFalse(BooleanUtils.isNotBoolean("no"));
+        assertFalse(BooleanUtils.isNotBoolean("0"));
+        assertFalse(BooleanUtils.isNotBoolean("off"));
+        assertFalse(BooleanUtils.isNotBoolean("true "));
+
+        assertTrue(BooleanUtils.isNotBoolean(null));
+        assertTrue(BooleanUtils.isNotBoolean(StringUtils.EMPTY));
+        assertTrue(BooleanUtils.isNotBoolean(StringUtils.BLANK));
+        assertTrue(BooleanUtils.isNotBoolean("Foo"));
+        assertTrue(BooleanUtils.isNotBoolean("Bar"));
+        assertTrue(BooleanUtils.isNotBoolean("tru"));
+        assertTrue(BooleanUtils.isNotBoolean("yep"));
+        assertTrue(BooleanUtils.isNotBoolean("true 1"));
+        assertTrue(BooleanUtils.isNotBoolean(",true"));
+    }
 }

@@ -95,9 +95,9 @@ public final class BooleanUtils {
     }
 
     /**
-     * Checks if value of provided {@link String} corresponds to group of true or false expressions
+     * Maps value of provided {@link String} to corresponding group of true or false expressions
      *
-     * @param value {@link String} that should be evaluated
+     * @param value {@link String} that should be mapped
      * @return {@code Boolean.TRUE} if provided {@link String} has value that corresponds to group of true expressions,
      * {@code Boolean.FALSE} if provided {@link String} has value that corresponds to group of false expressions,
      * otherwise null
@@ -118,4 +118,25 @@ public final class BooleanUtils {
         return null;
     }
 
+    /**
+     * Checks if value of provided {@link String} corresponds to group of true or false expressions
+     *
+     * @param value {@link String} that should be evaluated
+     * @return true if provided {@link String} equal to one of the true or false expressions, false otherwise
+     * @since 0.0.5
+     */
+    public static boolean isBoolean(String value) {
+        return Objects.nonNull(parseBoolean(value));
+    }
+
+    /**
+     * Checks if value of provided {@link String} does not correspond to group of true or false expressions
+     *
+     * @param value {@link String} that should be evaluated
+     * @return false if provided {@link String} equal to one of the true or false expressions, true otherwise
+     * @since 0.0.5
+     */
+    public static boolean isNotBoolean(String value) {
+        return Objects.isNull(parseBoolean(value));
+    }
 }

@@ -11,6 +11,7 @@ public class WSG84Coordinates {
 
     /**
      * Creates new instance of WSG84Coordinates with provided longitude and latitude
+     *
      * @param longitude of point
      * @param latitude of point
      */
@@ -21,6 +22,7 @@ public class WSG84Coordinates {
 
     /**
      * Returns longitude of point represented by this instance of WSG84Coordinates
+     *
      * @return longitude value
      */
     public double getLongitude() {
@@ -29,6 +31,7 @@ public class WSG84Coordinates {
 
     /**
      * Returns latitude of point represented by this instance of WSG84Coordinates
+     *
      * @return latitude value
      */
     public double getLatitude() {

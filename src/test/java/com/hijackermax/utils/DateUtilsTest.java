@@ -76,6 +76,26 @@ class DateUtilsTest {
     }
 
     @Test
+    void testShiftDayByMoths() {
+        assertNull(DateUtils.shiftDateByDays(null, 10));
+        long timeMillis = 1679970309662L; //Tue Mar 28 02:25:09.662 GMT 2023
+        long plusMillis = 1682648709662L; //Fri Apr 28 29 02:25:09.662 GMT 2023
+        long minusMillis = 1677551109662L; //Tue Feb 28 02:25:09.662 GMT 2023
+        assertEquals(new Date(plusMillis), DateUtils.shiftDateByMonths(new Date(timeMillis), 1));
+        assertEquals(new Date(minusMillis), DateUtils.shiftDateByMonths(new Date(timeMillis), -1));
+    }
+
+    @Test
+    void testShiftDayByYears() {
+        assertNull(DateUtils.shiftDateByDays(null, 10));
+        long timeMillis = 1679970309662L; //Tue Mar 28 02:25:09.662 GMT 2023
+        long plusMillis = 1711592709662L; //Thu Mar 28 02:25:09.662 GMT 2024
+        long minusMillis = 1648434309662L; //Mon Mar 28 02:25:09.662 GMT 2022
+        assertEquals(new Date(plusMillis), DateUtils.shiftDateByYears(new Date(timeMillis), 1));
+        assertEquals(new Date(minusMillis), DateUtils.shiftDateByYears(new Date(timeMillis), -1));
+    }
+
+    @Test
     void testBetween() {
         assertFalse(DateUtils.between(null, new Date(), new Date()));
         assertFalse(DateUtils.between(new Date(), null, new Date()));

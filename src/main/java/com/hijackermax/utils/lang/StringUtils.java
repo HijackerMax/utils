@@ -312,4 +312,16 @@ public final class StringUtils {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
+
+    /**
+     * Returs provided value {@link String} or default {@link String} if value is null, empty or blank
+     *
+     * @param value        that can be null, blank or empty
+     * @param defaultValue fallback value
+     * @return value if it is not null, blank or empty, otherwise defaultValue
+     * @since 0.0.5
+     */
+    public static String notBlankOrElse(String value, String defaultValue) {
+        return isBlank(value) ? defaultValue : value;
+    }
 }

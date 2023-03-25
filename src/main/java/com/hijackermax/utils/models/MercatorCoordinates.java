@@ -11,6 +11,7 @@ public class MercatorCoordinates {
 
     /**
      * Creates new instance of MercatorCoordinates with provided x and y coordinate
+     *
      * @param x x - coordinate
      * @param y y - coordinate
      */
@@ -21,6 +22,7 @@ public class MercatorCoordinates {
 
     /**
      * Returns x coordinate of point represented by this instance of MercatorCoordinates
+     *
      * @return x coordinate
      */
     public double getX() {
@@ -29,6 +31,7 @@ public class MercatorCoordinates {
 
     /**
      * Returns y coordinate of point represented by this instance of MercatorCoordinates
+     *
      * @return y coordinate
      */
     public double getY() {

@@ -2,6 +2,8 @@ package com.hijackermax.utils.lang;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
@@ -110,6 +112,44 @@ public final class DateUtils {
     }
 
     /**
+     * Shifts provided {@link Date} with provided amount of months
+     *
+     * @param source     source date
+     * @param shiftValue amount of months that should be used to shift source date
+     * @return shifted date, or null if source is null
+     * @since 0.0.5
+     */
+    public static Date shiftDateByMonths(Date source, int shiftValue) {
+        if (Objects.isNull(source)) {
+            return null;
+        }
+        return Date.from(
+                getZonedDateTime(source)
+                        .plusMonths(shiftValue)
+                        .toInstant()
+        );
+    }
+
+    /**
+     * Shifts provided {@link Date} with provided amount of years
+     *
+     * @param source     source date
+     * @param shiftValue amount of years that should be used to shift source date
+     * @return shifted date, or null if source is null
+     * @since 0.0.5
+     */
+    public static Date shiftDateByYears(Date source, int shiftValue) {
+        if (Objects.isNull(source)) {
+            return null;
+        }
+        return Date.from(
+                getZonedDateTime(source)
+                        .plusYears(shiftValue)
+                        .toInstant()
+        );
+    }
+
+    /**
      * Provides null-safe check if provided value {@link Date} between two provided boundary {@link Date}
      *
      * @param value      date that should be checked
@@ -123,5 +163,9 @@ public final class DateUtils {
             return false;
         }
         return leftBound.before(value) && rightBound.after(value);
+    }
+
+    private static ZonedDateTime getZonedDateTime(Date source) {
+        return ZonedDateTime.ofInstant(source.toInstant(), ZoneOffset.UTC);
     }
 }

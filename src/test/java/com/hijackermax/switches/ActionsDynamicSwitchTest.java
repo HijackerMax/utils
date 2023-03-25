@@ -1,7 +1,7 @@
 package com.hijackermax.switches;
 
-import com.hijackermax.utils.switches.ActionsDynamicSwitch;
 import com.hijackermax.utils.entities.Single;
+import com.hijackermax.utils.switches.ActionsDynamicSwitch;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

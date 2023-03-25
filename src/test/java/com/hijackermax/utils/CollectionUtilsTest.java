@@ -473,4 +473,63 @@ class CollectionUtilsTest {
                 .collect(CollectionUtils.toStringCollector());
         assertEquals(chars.length, result.length());
     }
+
+    @Test
+    void testSafeContains() {
+        assertFalse(CollectionUtils.safeContains(null, null));
+        assertFalse(CollectionUtils.safeContains(null, "Test"));
+        assertFalse(CollectionUtils.safeContains(List.of(1), null));
+        assertFalse(CollectionUtils.safeContains(List.of(1, 2, 3, 4, 5), 6));
+        assertFalse(CollectionUtils.safeContains(List.of(1, 2, 3, 4, 5), "String"));
+        assertTrue(CollectionUtils.safeContains(List.of(1, 2, 3, 4, 5), 2));
+        assertTrue(CollectionUtils.safeContains(List.of("Foo", "Bar", "Test"), "Bar"));
+    }
+
+    @Test
+    void testNotEmptyOrElseGet() {
+        assertEquals(List.of(1, 2, 3), CollectionUtils.notEmptyOrElseGet(List.of(1, 2, 3), () -> List.of(4, 5, 6)));
+        assertEquals(List.of(4, 5, 6), CollectionUtils.notEmptyOrElseGet(null, () -> List.of(4, 5, 6)));
+        assertEquals(List.of(4, 5, 6), CollectionUtils.notEmptyOrElseGet(List.of(), () -> List.of(4, 5, 6)));
+        assertThrows(NullPointerException.class, () -> CollectionUtils.notEmptyOrElseGet(null, null));
+    }
+
+    @Test
+    void testSafeContainsAnyArg() {
+        assertFalse(CollectionUtils.safeContainsAnyArg(null, 1, 2, 3));
+        assertFalse(CollectionUtils.safeContainsAnyArg(List.of(), 1, 2, 3));
+        assertFalse(CollectionUtils.safeContainsAnyArg(List.of()));
+        assertFalse(CollectionUtils.safeContainsAnyArg(List.of(1, 2, 3, 4, 5), 0));
+        assertTrue(CollectionUtils.safeContainsAnyArg(List.of(1, 2, 3, 4, 5), 2));
+    }
+
+    @Test
+    void testSafeContainsAllArg() {
+        assertFalse(CollectionUtils.safeContainsAllArg(null, 1, 2, 3));
+        assertFalse(CollectionUtils.safeContainsAllArg(List.of(), 1, 2, 3));
+        assertFalse(CollectionUtils.safeContainsAllArg(List.of(1, 2, 3, 4, 5), 1, 2, 3, 4, 6));
+        assertTrue(CollectionUtils.safeContainsAllArg(List.of(1, 2, 3, 4, 5), 1, 2, 3, 4));
+        assertTrue(CollectionUtils.safeContainsAllArg(List.of()));
+        assertTrue(CollectionUtils.safeContainsAllArg(List.of(1, 2, 3, 4, 5), 1, 2, 3, 4, 5));
+    }
+
+    @Test
+    void testSafeNotContainsArg() {
+        assertFalse(CollectionUtils.safeNotContainsArg(null, 1, 2, 3));
+        assertFalse(CollectionUtils.safeNotContainsArg(List.of(1, 2, 3, 4, 5), 1, 2));
+        assertFalse(CollectionUtils.safeNotContainsArg(List.of(1, 2, 3, 4, 5), 1, 2, 3, 4, 5));
+        assertTrue(CollectionUtils.safeNotContainsArg(List.of(1, 2, 3, 4, 5), 7, 8, 9, 10));
+        assertTrue(CollectionUtils.safeNotContainsArg(List.of()));
+        assertTrue(CollectionUtils.safeNotContainsArg(List.of(), 1, 2, 3));
+    }
+
+    @Test
+    void testSafeContainsAny() {
+        assertFalse(CollectionUtils.safeContainsAny(null, null));
+        assertFalse(CollectionUtils.safeContainsAny(List.of(1), null));
+        assertFalse(CollectionUtils.safeContainsAny(null, List.of(1)));
+        assertFalse(CollectionUtils.safeContainsAny(List.of(), List.of(1, 2, 3)));
+        assertFalse(CollectionUtils.safeContainsAny(List.of(), List.of()));
+        assertFalse(CollectionUtils.safeContainsAny(List.of(1, 2, 3, 4, 5), List.of(0, 10)));
+        assertTrue(CollectionUtils.safeContainsAny(List.of(1, 2, 3, 4, 5), List.of(2, 10)));
+    }
 }

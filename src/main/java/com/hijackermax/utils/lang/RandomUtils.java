@@ -69,6 +69,19 @@ public class RandomUtils {
     }
 
     /**
+     * Provides random byte array with predefined length
+     *
+     * @param length output array length
+     * @return byte array of predefined length
+     * @since 0.0.5
+     */
+    public static byte[] randomBytes(int length) {
+        byte[] result = new byte[length];
+        SECURE_RANDOM.nextBytes(result);
+        return result;
+    }
+
+    /**
      * Provides shuffled array of int range with provided boundaries
      *
      * @param lowerBound lower boundary of int range

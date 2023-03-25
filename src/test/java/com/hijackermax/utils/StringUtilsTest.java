@@ -182,4 +182,14 @@ class StringUtilsTest {
         String decompressedString = StringUtils.decompress(compressedString);
         assertEquals(testString, decompressedString);
     }
+
+    @Test
+    void testNotBlankOrElse() {
+        assertEquals("Hello", StringUtils.notBlankOrElse("Hello", "Foo"));
+        assertEquals("Hello", StringUtils.notBlankOrElse("Hello", null));
+        assertEquals("Foo", StringUtils.notBlankOrElse(null, "Foo"));
+        assertEquals("Foo", StringUtils.notBlankOrElse("", "Foo"));
+        assertEquals("Foo", StringUtils.notBlankOrElse("  ", "Foo"));
+        assertNull(StringUtils.notBlankOrElse("  ", null));
+    }
 }

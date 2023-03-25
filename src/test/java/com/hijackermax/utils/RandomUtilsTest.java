@@ -78,6 +78,12 @@ class RandomUtilsTest {
     }
 
     @Test
+    void testRandomByteArray() {
+        int size = 32;
+        assertEquals(size, RandomUtils.randomBytes(size).length);
+    }
+
+    @Test
     void testShuffleIntArray() {
         int[] source = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 0xAA};
         Arrays.sort(source);

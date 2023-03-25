@@ -5,7 +5,9 @@ import com.hijackermax.utils.entities.Tuple;
 import com.hijackermax.utils.switches.ClassDynamicSwitch;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

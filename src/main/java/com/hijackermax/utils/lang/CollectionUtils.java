@@ -92,7 +92,7 @@ public final class CollectionUtils {
      * @since 0.0.1
      */
     public static <T> Stream<T> safeStreamOf(T[] input) {
-        return Objects.isNull(input) ? Stream.empty() : Stream.of(input);
+        return Objects.isNull(input) ? Stream.empty() : Arrays.stream(input);
     }
 
     /**
@@ -257,14 +257,13 @@ public final class CollectionUtils {
     }
 
     /**
-     * Conducts null-safe check if left input {@link Collection}
-     * contains all elements from right input {@link Collection}
+     * Checks if left input {@link Collection} contains all elements from right input {@link Collection}
      *
      * @param left  {@link Collection} that should be checked if contains all elements from right collection
      * @param right {@link Collection} that should be tested
      * @param <I>   input type
      * @return true if left {@link Collection} contains all elements from right {@link Collection}
-     * or both collections are null, {@code false} if left {@link Collection} does not contains all elements
+     * or both collections are null, false if left {@link Collection} does not contain all elements
      * from right {@link Collection} or one of the collections is null
      * @since 0.0.1
      */
@@ -369,8 +368,7 @@ public final class CollectionUtils {
      * @param left  fist input {@link Collection}
      * @param right second input {@link Collection}
      * @param <I>   input collection elements type
-     * @return true if both {@link Collection} have same elements inside,
-     * {@code false} if there is a difference in elements
+     * @return true if both {@link Collection} have same elements inside, false if there is a difference in elements
      * @since 0.0.1
      */
     public static <I> boolean haveSameElements(Collection<I> left, Collection<I> right) {
@@ -663,5 +661,99 @@ public final class CollectionUtils {
                 StringBuffer::append,
                 StringBuffer::toString
         );
+    }
+
+    /**
+     * Checks if input {@link Collection} contains provided value
+     *
+     * @param source {@link Collection} that should be checked
+     * @param value  that can be present in input collection
+     * @param <I>    input type
+     * @return true if input {@link Collection} contains provided value,
+     * false if input {@link Collection} does not contain provided value or one of the arguments is null
+     * @since 0.0.5
+     */
+    public static <I> boolean safeContains(Collection<? super I> source, I value) {
+        return Objects.nonNull(source) && Objects.nonNull(value) && source.contains(value);
+    }
+
+    /**
+     * Provides input {@link Collection} if non-empty or gets fallback one from provided fallback {@link Supplier}
+     *
+     * @param source   {@link Collection} that can be empty or null
+     * @param fallback {@link Collection} {@link Supplier} that will supply collection in case of
+     *                 source one if empty or null
+     * @param <T>      input type
+     * @param <X>      input collection type
+     * @return input {@link Collection} if not empty or null,
+     * otherwise {@link Collection} supplied by provided fallback {@link Supplier}
+     * @since 0.0.5
+     */
+    public static <T, X extends Collection<? super T>> X notEmptyOrElseGet(X source, Supplier<X> fallback) {
+        Objects.requireNonNull(fallback, "Fallback supplier must not be null");
+        return isEmpty(source) ? fallback.get() : source;
+    }
+
+    /**
+     * Checks if source input {@link Collection} contains any of elements from vararg array
+     *
+     * @param source  {@link Collection} that should be checked if contains any of elements from vararg array
+     * @param options vararg array that should be tested
+     * @param <T>     input type
+     * @return true if source {@link Collection} is not null and contains some elements from vararg array,
+     * otherwise false
+     * @since 0.0.5
+     */
+    @SafeVarargs
+    public static <T> boolean safeContainsAnyArg(Collection<? super T> source, T... options) {
+        return Objects.nonNull(source) && Arrays.stream(options)
+                .anyMatch(source::contains);
+    }
+
+    /**
+     * Checks if source input {@link Collection} contains all elements from vararg array
+     *
+     * @param source  {@link Collection} that should be checked if contains all elements from vararg array
+     * @param options vararg array that should be tested
+     * @param <T>     input type
+     * @return true if source {@link Collection} is not null and contains all elements from vararg array,
+     * otherwise false
+     * @since 0.0.5
+     */
+    @SafeVarargs
+    public static <T> boolean safeContainsAllArg(Collection<? super T> source, T... options) {
+        return Objects.nonNull(source) && Arrays.stream(options)
+                .allMatch(source::contains);
+    }
+
+    /**
+     * Checks if source input {@link Collection} does not contain any of elements from vararg array
+     *
+     * @param source  {@link Collection} that should be checked if not contains any of elements from vararg array
+     * @param options vararg array that should be tested
+     * @param <T>     input type
+     * @return true if source {@link Collection} is not null and does not contain any of elements from vararg array,
+     * otherwise false
+     * @since 0.0.5
+     */
+    @SafeVarargs
+    public static <T> boolean safeNotContainsArg(Collection<? super T> source, T... options) {
+        return Objects.nonNull(source) && Arrays.stream(options)
+                .noneMatch(source::contains);
+    }
+
+    /**
+     * Checks if source input {@link Collection} contains some elements from target input {@link Collection}
+     *
+     * @param source {@link Collection} that should be checked if contains all elements from target collection
+     * @param target {@link Collection} that should be tested
+     * @param <T>    input type
+     * @return true if both {@link Collection} are not null and input {@link Collection} contains some elements
+     * from target {@link Collection}, otherwise false
+     * @since 0.0.5
+     */
+    public static <T> boolean safeContainsAny(Collection<? super T> source, Collection<? extends T> target) {
+        return Objects.nonNull(source) && Objects.nonNull(target) && target.stream()
+                .anyMatch(source::contains);
     }
 }
