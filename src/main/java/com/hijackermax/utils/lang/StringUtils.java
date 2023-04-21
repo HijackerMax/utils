@@ -1,16 +1,13 @@
 package com.hijackermax.utils.lang;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Set of utility methods that can help to work with Strings
@@ -20,41 +17,36 @@ public final class StringUtils {
      * Empty {@link String} constant
      */
     public static final String EMPTY = "";
-
     /**
      * Blank {@link String} constant
      */
     public static final String BLANK = " ";
-
     /**
      * At {@link String} constant
      */
     public static final String AT = "@";
-
     /**
      * Semicolon {@link String} constant
      */
     public static final String SEMICOLON = ";";
-
     /**
      * Comma {@link String} constant
      */
     public static final String COMMA = ",";
-
     /**
      * Period {@link String} constant
      */
     public static final String PERIOD = ".";
-
     /**
      * Dash {@link String} constant
      */
     public static final String DASH = "-";
-
     /**
      * Underscore {@link String} constant
      */
     public static final String UNDERSCORE = "_";
+    private static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
+    private static final Pattern NON_DIGITS_PATTERN = Pattern.compile("[^\\d.]");
 
     private StringUtils() {
     }
@@ -208,7 +200,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static String removeNonDigits(String source) {
-        return isBlank(source) ? EMPTY : StringUtils.trimToEmpty(source).replaceAll("[^\\d.]", EMPTY);
+        return isBlank(source) ? EMPTY : NON_DIGITS_PATTERN.matcher(source).replaceAll(EMPTY);
     }
 
     /**
@@ -284,14 +276,20 @@ public final class StringUtils {
      * @since 0.0.3
      */
     public static String compress(String source) throws IOException {
-        if (isEmpty(source)) {
-            return EMPTY;
-        }
-        try (var outputStream = new ByteArrayOutputStream(); var gzOutputStream = new GZIPOutputStream(outputStream)) {
-            gzOutputStream.write(source.getBytes(StandardCharsets.UTF_8));
-            gzOutputStream.finish();
-            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        }
+        return compress(source, Base64.getEncoder()::encodeToString);
+    }
+
+    /**
+     * Compresses source {@link String} using GZIP and encodes it with provided encoder
+     *
+     * @param source  {@link String} that needs to be compressed
+     * @param encoder byte array to {@link String} encoder
+     * @return compressed with GZIP and encoded with provided encoder {@link String} or empty {@link String} if source is empty or null
+     * @throws IOException in case of problems during source {@link String} compression
+     * @since 0.0.6
+     */
+    public static String compress(String source, Function<byte[], String> encoder) throws IOException {
+        return ObjectUtils.compress(source.getBytes(StandardCharsets.UTF_8), encoder);
     }
 
     /**
@@ -303,14 +301,20 @@ public final class StringUtils {
      * @since 0.0.3
      */
     public static String decompress(String source) throws IOException {
-        if (isEmpty(source)) {
-            return EMPTY;
-        }
-        byte[] bytes = Base64.getDecoder().decode(source);
-        try (var byteArrayInputStream = new ByteArrayInputStream(bytes);
-             var inputStream = new GZIPInputStream(byteArrayInputStream)) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        }
+        return decompress(source, Base64.getDecoder()::decode);
+    }
+
+    /**
+     * Decodes source {@link String} using provided decoder and decompresses it with GZIP
+     *
+     * @param source  {@link String} that needs to be decompressed
+     * @param decoder {@link String} to byte array decoder
+     * @return decoded with provided decoder and decompressed with GZIP {@link String} or empty {@link String} if source is empty or null
+     * @throws IOException in case of problems during source {@link String} decompression
+     * @since 0.0.6
+     */
+    public static String decompress(String source, Function<String, byte[]> decoder) throws IOException {
+        return new String(ObjectUtils.decompress(source, decoder), StandardCharsets.UTF_8);
     }
 
     /**
@@ -323,5 +327,16 @@ public final class StringUtils {
      */
     public static String notBlankOrElse(String value, String defaultValue) {
         return isBlank(value) ? defaultValue : value;
+    }
+
+    /**
+     * Remove whitespaces if non-null {@link String} is provided, otherwise returns empty string
+     *
+     * @param source {@link String} to process
+     * @return {@link String} with removed whitespaces or empty string if input string is null
+     * @since 0.0.6
+     */
+    public static String removeWhitespaces(String source) {
+        return isBlank(source) ? EMPTY : WHITESPACES_PATTERN.matcher(source).replaceAll(EMPTY);
     }
 }

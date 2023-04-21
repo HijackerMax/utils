@@ -3,6 +3,7 @@ package com.hijackermax.utils.entities;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
 
@@ -49,6 +50,15 @@ public class Tuple<K, V> extends Single<V> {
      */
     public void setKey(K key) {
         this.key = key;
+    }
+
+    /**
+     * Provides ability to modify existing key
+     *
+     * @param processor {@link UnaryOperator} which will be applied to existing key
+     */
+    public void modifyKey(UnaryOperator<K> processor) {
+        this.key = processor.apply(key);
     }
 
     /**

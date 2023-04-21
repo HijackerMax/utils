@@ -82,6 +82,18 @@ public class RandomUtils {
     }
 
     /**
+     * Provides random {@link String} of predefined length and predefined group of chars
+     *
+     * @param charSequence array that contains characters to choose randomly from
+     * @param length       output {@link String} length
+     * @return random ASCII {@link String} of predefined length
+     * @since 0.0.6
+     */
+    public static String randomStringSequence(int length, char... charSequence) {
+        return randomStringSequence(charSequence, length);
+    }
+
+    /**
      * Provides shuffled array of int range with provided boundaries
      *
      * @param lowerBound lower boundary of int range

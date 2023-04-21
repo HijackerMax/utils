@@ -1,9 +1,11 @@
 package com.hijackermax.utils;
 
+import com.hijackermax.utils.encoders.Base122;
 import com.hijackermax.utils.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -118,6 +120,7 @@ class StringUtilsTest {
     void testRemoveNonDigits() {
         assertEquals(StringUtils.EMPTY, StringUtils.removeNonDigits(null));
         assertEquals("1234567", StringUtils.removeNonDigits("x1c2v3b4n5m6,7"));
+        assertEquals("01234567", StringUtils.removeNonDigits("    0   x1c 2v3 b4 n5 m6 ,7  "));
     }
 
     @Test
@@ -191,5 +194,43 @@ class StringUtilsTest {
         assertEquals("Foo", StringUtils.notBlankOrElse("", "Foo"));
         assertEquals("Foo", StringUtils.notBlankOrElse("  ", "Foo"));
         assertNull(StringUtils.notBlankOrElse("  ", null));
+    }
+
+    @Test
+    void testCompressDecompressCustom() throws IOException {
+        String testString = IntStream.range(0, 5000)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining());
+        String compressedString = StringUtils.compress(testString, Base122::encode);
+        assertTrue(compressedString.length() < testString.length());
+        String decompressedString = StringUtils.decompress(compressedString, Base122::decode);
+        assertEquals(testString, decompressedString);
+    }
+
+    @Test
+    void testCompressDecompressSizeDifference() throws IOException {
+        String testString = IntStream.range(0, 5000)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining());
+        String compressedStringBase122 = StringUtils.compress(testString, Base122::encode);
+        String compressedStringBase64 = StringUtils.compress(testString);
+        int sourceStringBytesCount = testString.getBytes(StandardCharsets.UTF_8).length;
+        int compressedBytesCountBase122 = compressedStringBase122.getBytes(StandardCharsets.UTF_8).length;
+        int compressedBytesCountBase64 = compressedStringBase64.getBytes(StandardCharsets.UTF_8).length;
+        assertTrue(compressedBytesCountBase122 < sourceStringBytesCount);
+        assertTrue(compressedBytesCountBase122 < compressedBytesCountBase64);
+        String decompressedStringBase122 = StringUtils.decompress(compressedStringBase122, Base122::decode);
+        String decompressedStringBase64 = StringUtils.decompress(compressedStringBase64);
+        assertEquals(decompressedStringBase64, decompressedStringBase122);
+        assertEquals(testString, decompressedStringBase122);
+    }
+
+    @Test
+    void testRemoveWhitespaces() {
+        assertEquals(StringUtils.EMPTY, StringUtils.removeWhitespaces(null));
+        assertEquals(StringUtils.EMPTY, StringUtils.removeWhitespaces(StringUtils.EMPTY));
+        assertEquals(StringUtils.EMPTY, StringUtils.removeWhitespaces(StringUtils.BLANK));
+        assertEquals("Foo", StringUtils.removeWhitespaces("F o o"));
+        assertEquals("Foo", StringUtils.removeWhitespaces(" F o o "));
     }
 }

@@ -4,6 +4,7 @@ import com.hijackermax.utils.functional.TriConsumer;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
 
@@ -52,6 +53,15 @@ public class Triple<K, M, V> extends Tuple<K, V> {
      */
     public void setMiddle(M middle) {
         this.middle = middle;
+    }
+
+    /**
+     * Provides ability to modify existing middle
+     *
+     * @param processor {@link UnaryOperator} which will be applied to existing middle
+     */
+    public void modifyMiddle(UnaryOperator<M> processor) {
+        this.middle = processor.apply(middle);
     }
 
     /**

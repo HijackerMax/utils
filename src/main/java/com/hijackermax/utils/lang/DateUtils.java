@@ -165,6 +165,27 @@ public final class DateUtils {
         return leftBound.before(value) && rightBound.after(value);
     }
 
+    /**
+     * Provides null-safe check if provided value {@link Date} between two boundary {@link Date}
+     * calculated by shifting provided target date by provided ms offset value
+     *
+     * @param value    {@link Date} that should be checked
+     * @param target   middle of target dates range
+     * @param offsetMs middle date offset value for range boundaries, in milliseconds
+     * @return true if date in range, false if not or one of the provided dates is null
+     * @throws IllegalArgumentException if provided offset is zero or negative number
+     * @since 0.0.6
+     */
+    public static boolean inRange(Date value, Date target, long offsetMs) {
+        if (Objects.isNull(value) || Objects.isNull(target)) {
+            return false;
+        }
+        if (offsetMs <= 0) {
+            throw new IllegalArgumentException("Offset should not be negative or zero");
+        }
+        return between(value, shiftDateByMs(target, -offsetMs), shiftDateByMs(target, offsetMs));
+    }
+
     private static ZonedDateTime getZonedDateTime(Date source) {
         return ZonedDateTime.ofInstant(source.toInstant(), ZoneOffset.UTC);
     }

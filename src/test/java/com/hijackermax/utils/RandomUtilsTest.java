@@ -173,4 +173,22 @@ class RandomUtilsTest {
         Arrays.sort(shuffled);
         assertArrayEquals(referenceArray, shuffled);
     }
+
+    @Test
+    void testRandomStringSequence() {
+        int stringLength = 32;
+        char[] chars = "ABCDEFGHIJK0123456789".toCharArray();
+        String randomString = RandomUtils.randomStringSequence(stringLength, chars);
+        assertEquals(stringLength, randomString.length());
+        int encounters = 0;
+        for (char c : chars) {
+            for (char r : randomString.toCharArray()) {
+                if (r == c) {
+                    encounters++;
+                    break;
+                }
+            }
+        }
+        assertTrue(encounters > 0);
+    }
 }

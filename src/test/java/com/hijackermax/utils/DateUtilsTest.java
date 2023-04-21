@@ -15,7 +15,7 @@ class DateUtilsTest {
         assertFalse(DateUtils.sameDay(null, new Date()));
         assertFalse(DateUtils.sameDay(new Date(), null));
         long timeMillis = 1679970309662L; //Tue Mar 28 02:25:09 GMT 2023
-        int oneDayMS = 24 * 60 * 60 * 1000;
+        long oneDayMS = 24 * 60 * 60 * 1000;
         assertFalse(DateUtils.sameDay(new Date(timeMillis), new Date(timeMillis + oneDayMS)));
         assertFalse(DateUtils.sameDay(new Date(timeMillis + oneDayMS), new Date(timeMillis + 2 * oneDayMS)));
         int threeMinutes = 3 * 60 * 1000;
@@ -105,5 +105,17 @@ class DateUtilsTest {
         long minusMillis = 1679883909662L; //Tue Mar 27 02:25:09.662 GMT 2023
         assertTrue(DateUtils.between(new Date(timeMillis), new Date(minusMillis), new Date(plusMillis)));
         assertFalse(DateUtils.between(new Date(minusMillis), new Date(timeMillis), new Date(plusMillis)));
+    }
+
+    @Test
+    void testInRange() {
+        Date now = new Date();
+        assertFalse(DateUtils.inRange(null, now, 10));
+        assertFalse(DateUtils.inRange(now, null, 10));
+        assertThrows(IllegalArgumentException.class, () -> DateUtils.inRange(now, now, 0));
+        long timeMillis = 1679970309662L; //Tue Mar 28 02:25:09.662 GMT 2023
+        long targetMiddle = 1680143109662L; //Thu Mar 30 02:25:09.662 GMT 2023
+        assertTrue(DateUtils.inRange(new Date(timeMillis), new Date(timeMillis), 86400000));
+        assertFalse(DateUtils.inRange(new Date(timeMillis), new Date(targetMiddle), 86400000));
     }
 }

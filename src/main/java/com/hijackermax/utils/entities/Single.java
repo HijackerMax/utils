@@ -2,6 +2,7 @@ package com.hijackermax.utils.entities;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
 
@@ -54,6 +55,15 @@ public class Single<V> {
      */
     public void setValue(V value) {
         this.value = value;
+    }
+
+    /**
+     * Provides ability to modify existing value
+     *
+     * @param processor {@link UnaryOperator} which will be applied to existing value
+     */
+    public void modifyValue(UnaryOperator<V> processor) {
+        this.value = processor.apply(value);
     }
 
     /**
