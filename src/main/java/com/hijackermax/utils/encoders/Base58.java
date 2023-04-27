@@ -46,7 +46,7 @@ public final class Base58 {
             if (isLeadingZero) {
                 boolean isByteZero = 0 == nextByte;
                 if (isByteZero) {
-                    result.insert(0, (char) 0x49);
+                    result.insert(0, (char) 0x31);
                 }
                 isLeadingZero = isByteZero;
             }
@@ -77,7 +77,7 @@ public final class Base58 {
                 throw new IllegalArgumentException("Provided source string is not Base58 encoded");
             }
             if (isLeadingOne) {
-                boolean isCharOne = 0x49 == nextChar;
+                boolean isCharOne = 0x31 == nextChar;
                 if (isCharOne) {
                     result.write(0x00);
                 }
@@ -92,10 +92,10 @@ public final class Base58 {
     }
 
     private static int calculateEncodeBufferSize(int byteArrayLength) {
-        return byteArrayLength * 7 / 5;
+        return byteArrayLength * 8 / 6;
     }
 
     private static int calculateDecodedBufferSize(int stringLength) {
-        return stringLength * 5 / 7;
+        return stringLength * 6 / 8;
     }
 }

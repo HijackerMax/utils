@@ -1,20 +1,20 @@
 package com.hijackermax.encoders;
 
-import com.hijackermax.utils.encoders.Base58;
+import com.hijackermax.utils.encoders.Base32;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
-class Base58Test extends AbstractEncoderTest {
+class Base32Test extends AbstractEncoderTest {
 
     @Override
     Function<byte[], String> getEncoder() {
-        return Base58::encode;
+        return Base32::encode;
     }
 
     @Override
     Function<String, byte[]> getDecoder() {
-        return Base58::decode;
+        return Base32::decode;
     }
 
     @Override
@@ -24,6 +24,6 @@ class Base58Test extends AbstractEncoderTest {
 
     @Override
     String getEncodedSource() {
-        return "3q4DFPT8Jw8FG6jg9qdEpSaCvNBpejFY68kA6y6aacU2j8z18ig";
+        return "AHJQ6X2KEHS6JVK764S38D9P6WW3JC26DXQM4RBJ45026915BRK2MA19BDEG";
     }
 }

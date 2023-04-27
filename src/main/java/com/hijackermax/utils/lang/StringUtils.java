@@ -45,6 +45,17 @@ public final class StringUtils {
      * Underscore {@link String} constant
      */
     public static final String UNDERSCORE = "_";
+
+    /**
+     * Zero {@link String} constant
+     */
+    public static final String ZERO = "0";
+
+    /**
+     * One {@link String} constant
+     */
+    public static final String ONE = "1";
+
     private static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
     private static final Pattern NON_DIGITS_PATTERN = Pattern.compile("[^\\d.]");
 

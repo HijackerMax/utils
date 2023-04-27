@@ -1,5 +1,8 @@
 package com.hijackermax.utils.lang;
 
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
 /**
  * Set of utility methods that can help with math operations
  */
@@ -232,5 +235,93 @@ public final class MathUtils {
      */
     public static float absMultiply(float a, float b) {
         return Math.abs(a * b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     *
+     * @param b subtrahend operand
+     * @return {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Integer> subtract(int b) {
+        return a -> subtract(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     *
+     * @param b subtrahend operand
+     * @return {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Long> subtract(long b) {
+        return a -> subtract(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     *
+     * @param b subtrahend operand
+     * @return {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Float> subtract(float b) {
+        return a -> subtract(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     *
+     * @param b subtrahend operand
+     * @return {@link UnaryOperator} which subtracts provided value from {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Double> subtract(double b) {
+        return a -> subtract(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which adds provided value to {@link Function} argument
+     *
+     * @param b addend
+     * @return {@link UnaryOperator} which adds provided value to {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Integer> add(int b) {
+        return a -> Integer.sum(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which adds provided value to {@link Function} argument
+     *
+     * @param b addend
+     * @return {@link UnaryOperator} which adds provided value to {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Long> add(long b) {
+        return a -> Long.sum(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which adds provided value to {@link Function} argument
+     *
+     * @param b addend
+     * @return {@link UnaryOperator} which adds provided value to {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Float> add(float b) {
+        return a -> Float.sum(a, b);
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which adds provided value to {@link Function} argument
+     *
+     * @param b addend
+     * @return {@link UnaryOperator} which adds provided value to {@link Function} argument
+     * @since 0.0.7
+     */
+    public static UnaryOperator<Double> add(double b) {
+        return a -> Double.sum(a, b);
     }
 }

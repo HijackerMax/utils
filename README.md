@@ -58,6 +58,11 @@ Licensed under the Apache 2.0 License
 
 #### Encoders / decoders
 
+##### Base32
+
+* Binary-to-text encoding. Based on charset [variant](https://www.crockford.com/base32.html) of Douglas Crockford,
+  without check
+
 ##### Base58
 
 * Binary-to-text encoding. Character set includes all uppercase and lowercase letters except for "0", "O", "I", and "l"
@@ -82,7 +87,7 @@ Just add this to your **pom.xml**
 
 <dependency>
     <groupId>com.hijackermax</groupId>
-    <artifactId>utils</artifactId>
-    <version>0.0.6</version>
+  <artifactId>utils</artifactId>
+  <version>0.0.7</version>
 </dependency>
 ```

@@ -13,9 +13,9 @@ import java.util.Objects;
  * @since 0.0.6
  */
 public final class Base85 {
-    private static final int ASCII_START_IDX = 0x21;
+    private static final int CHAR_START_IDX = 0x21;
     private static final int[] POWERS_85 = {52200625, 614125, 7225, 85, 1};
-    private static final byte[] IGNORED_ASCII = {0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x20};
+    private static final byte[] IGNORED_CHARS = {0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x20};
 
     private Base85() {
     }
@@ -58,7 +58,7 @@ public final class Base85 {
         int paginationIdx = 0;
         for (int idx = 0; idx < sourceBytes.length; idx++) {
             byte nextByte = sourceBytes[idx];
-            if (0 <= Arrays.binarySearch(IGNORED_ASCII, nextByte)) {
+            if (0 <= Arrays.binarySearch(IGNORED_CHARS, nextByte)) {
                 continue;
             }
             boolean isZeroPlaceholder = 0x7A == nextByte;
@@ -69,7 +69,7 @@ public final class Base85 {
             }
             if (isZeroPlaceholder) {
                 while (paginationIdx < 5) {
-                    pagination[paginationIdx++] = ASCII_START_IDX;
+                    pagination[paginationIdx++] = CHAR_START_IDX;
                 }
             } else {
                 pagination[paginationIdx++] = nextByte;
@@ -102,7 +102,7 @@ public final class Base85 {
         int encodedSize = actualBytes + 1;
         byte[] encodedPartition = new byte[encodedSize];
         for (int idx = 0; idx < encodedSize; idx++) {
-            encodedPartition[idx] = (byte) ((unsignedInt / POWERS_85[idx]) + ASCII_START_IDX);
+            encodedPartition[idx] = (byte) ((unsignedInt / POWERS_85[idx]) + CHAR_START_IDX);
             unsignedInt %= POWERS_85[idx];
         }
         return encodedPartition;
@@ -111,7 +111,7 @@ public final class Base85 {
     private static byte[] decodePartition(byte[] partition) {
         int value = 0;
         for (int idx = 0; idx < 5; idx++) {
-            value += (partition[idx] - ASCII_START_IDX) * POWERS_85[idx];
+            value += (partition[idx] - CHAR_START_IDX) * POWERS_85[idx];
         }
         return new byte[]{(byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};
     }

@@ -9,8 +9,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static com.hijackermax.utils.lang.MathUtils.add;
+import static com.hijackermax.utils.lang.MathUtils.subtract;
+
 /**
- * Binary-to-text encoding that is more space-efficient than base64
+ * Binary-to-text encoding that is more space-efficient than base64, based on idea of Kevin Albertson
  *
  * @since 0.0.6
  */
@@ -61,20 +64,20 @@ public final class Base122 {
         if (StringUtils.isBlank(source)) {
             return new byte[0];
         }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(calculateDecodedBufferSize(source.length()));
-        Tuple<Byte, Byte> dataPointers = new Tuple<>((byte) 0, (byte) 0);
+        ByteArrayOutputStream result = new ByteArrayOutputStream(calculateDecodedBufferSize(source.length()));
+        Tuple<Integer, Integer> dataPointers = new Tuple<>(0, 0);
         for (char nextChar : source.toCharArray()) {
             if (nextChar > 0x7F) {
                 int illegalIndex = (nextChar >>> 8) & 0x07;
                 if (illegalIndex != K_SHORTENED) {
-                    pushPartition(INVALID_CHARS[illegalIndex] << 1, dataPointers, outputStream::write);
+                    pushPartition(INVALID_CHARS[illegalIndex] << 1, dataPointers, result::write);
                 }
-                pushPartition((nextChar & 0x7F) << 1, dataPointers, outputStream::write);
+                pushPartition((nextChar & 0x7F) << 1, dataPointers, result::write);
             } else {
-                pushPartition(nextChar << 1, dataPointers, outputStream::write);
+                pushPartition(nextChar << 1, dataPointers, result::write);
             }
         }
-        return outputStream.toByteArray();
+        return result.toByteArray();
     }
 
     private static byte nextPartition(byte[] data, int length, Tuple<Integer, Integer> dataPointers) {
@@ -83,12 +86,12 @@ public final class Base122 {
         }
         int firstPart = (((0xFE >>> dataPointers.getValue()) & (data[dataPointers.getKey()] & 0xFF))
                 << dataPointers.getValue()) >>> 1;
-        dataPointers.modifyValue(v -> v + 7);
+        dataPointers.modifyValue(add(7));
         if (dataPointers.getValue() < 8) {
             return (byte) firstPart;
         }
-        dataPointers.modifyValue(v -> v - 8);
-        dataPointers.modifyKey(k -> k + 1);
+        dataPointers.modifyValue(subtract(8));
+        dataPointers.modifyKey(add(1));
         if (dataPointers.getKey() >= length) {
             return (byte) firstPart;
         }
@@ -97,13 +100,13 @@ public final class Base122 {
         return (byte) (firstPart | secondPart);
     }
 
-    private static void pushPartition(int nextValue, Tuple<Byte, Byte> dataPointers, Consumer<Byte> valueConsumer) {
-        dataPointers.modifyKey(k -> (byte) (k | (nextValue >>> dataPointers.getValue())));
-        dataPointers.modifyValue(v -> (byte) (v + 7));
+    private static void pushPartition(int nextValue, Tuple<Integer, Integer> dataPointers, Consumer<Byte> valueConsumer) {
+        dataPointers.modifyKey(k -> k | (nextValue >>> dataPointers.getValue()));
+        dataPointers.modifyValue(add(7));
         if (dataPointers.getValue() >= 8) {
-            valueConsumer.accept(dataPointers.getKey());
-            dataPointers.modifyValue(v -> (byte) (v - 8));
-            dataPointers.setKey((byte) (nextValue << (7 - dataPointers.getValue()) & 0xFF));
+            valueConsumer.accept((byte) (dataPointers.getKey() & 0xFF));
+            dataPointers.modifyValue(subtract(8));
+            dataPointers.setKey(nextValue << (7 - dataPointers.getValue()) & 0xFF);
         }
     }
 

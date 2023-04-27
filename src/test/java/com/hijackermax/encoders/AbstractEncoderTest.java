@@ -43,8 +43,21 @@ abstract class AbstractEncoderTest {
         assertEquals(source, decoded, String.format("Source and decode don't match, source length %d", length));
     }
 
+    @Test
+    void testEncodeDecodeStatic() {
+        byte[] sourceBytes = getSourceForEncode();
+        String encoded = getEncoder().apply(sourceBytes);
+        assertFalse(encoded.isEmpty());
+        assertEquals(getEncodedSource(), encoded);
+        byte[] decodedBytes = getDecoder().apply(encoded);
+        assertArrayEquals(sourceBytes, decodedBytes);
+    }
 
     abstract Function<byte[], String> getEncoder();
 
     abstract Function<String, byte[]> getDecoder();
+
+    abstract byte[] getSourceForEncode();
+
+    abstract String getEncodedSource();
 }

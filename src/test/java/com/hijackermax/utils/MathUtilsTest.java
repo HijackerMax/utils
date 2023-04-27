@@ -135,4 +135,61 @@ class MathUtilsTest {
         assertEquals(0D, MathUtils.absMultiply(20D, -0D));
         assertEquals(100D, MathUtils.absMultiply(10D, -10D));
     }
+
+    @Test
+    void testSubtractLongUnaryOperator() {
+        assertEquals(-10L, MathUtils.subtract(20L).apply(10L));
+        assertEquals(0L, MathUtils.subtract(0L).apply(0L));
+        assertEquals(20L, MathUtils.subtract(-10L).apply(10L));
+    }
+
+    @Test
+    void testSubtractIntUnaryOperator() {
+        assertEquals(-10, MathUtils.subtract(20).apply(10));
+        assertEquals(0, MathUtils.subtract(0).apply(0));
+        assertEquals(20, MathUtils.subtract(-10).apply(10));
+    }
+
+    @Test
+    void testSubtractFloatUnaryOperator() {
+        assertEquals(-10F, MathUtils.subtract(20F).apply(10F));
+        assertEquals(0F, MathUtils.subtract(0F).apply(0F));
+        assertEquals(20F, MathUtils.subtract(-10F).apply(10F));
+    }
+
+    @Test
+    void testSubtractDoubleUnaryOperator() {
+        assertEquals(-10D, MathUtils.subtract(20D).apply(10D));
+        assertEquals(0D, MathUtils.subtract(0D).apply(0D));
+        assertEquals(20D, MathUtils.subtract(-10D).apply(10D));
+    }
+
+
+    @Test
+    void testAddLongUnaryOperator() {
+        assertEquals(30L, MathUtils.add(20L).apply(10L));
+        assertEquals(0L, MathUtils.add(0L).apply(0L));
+        assertEquals(0L, MathUtils.add(-10L).apply(10L));
+    }
+
+    @Test
+    void testAddIntUnaryOperator() {
+        assertEquals(30, MathUtils.add(20).apply(10));
+        assertEquals(0, MathUtils.add(0).apply(0));
+        assertEquals(0, MathUtils.add(-10).apply(10));
+    }
+
+    @Test
+    void testAddFloatUnaryOperator() {
+        assertEquals(30F, MathUtils.add(20F).apply(10F));
+        assertEquals(0F, MathUtils.add(0F).apply(0F));
+        assertEquals(0F, MathUtils.add(-10F).apply(10F));
+    }
+
+    @Test
+    void testAddDoubleUnaryOperator() {
+        assertEquals(30D, MathUtils.add(20D).apply(10D));
+        assertEquals(0D, MathUtils.add(0D).apply(0D));
+        assertEquals(0D, MathUtils.add(-10D).apply(10D));
+    }
 }
