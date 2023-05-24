@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 /**
  * Set of utility methods that can provide some random values
  */
-public class RandomUtils {
+public final class RandomUtils {
     private static final char[] ALPHA_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final char[] NUMERIC = "1234567890".toCharArray();
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -232,6 +232,6 @@ public class RandomUtils {
     private static String randomStringSequence(char[] charSequence, int length) {
         return SECURE_RANDOM.ints(length, 0, charSequence.length)
                 .mapToObj(idx -> charSequence[idx])
-                .collect(CollectionUtils.toStringCollector());
+                .collect(CollectorUtils.toStringCollector());
     }
 }

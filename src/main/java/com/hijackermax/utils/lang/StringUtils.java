@@ -1,13 +1,22 @@
 package com.hijackermax.utils.lang;
 
+import com.hijackermax.utils.entities.Single;
+import com.hijackermax.utils.enums.ComparisonOperators;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.hijackermax.utils.lang.NumberUtils.requireGreaterThanZero;
 
 /**
  * Set of utility methods that can help to work with Strings
@@ -58,6 +67,7 @@ public final class StringUtils {
 
     private static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
     private static final Pattern NON_DIGITS_PATTERN = Pattern.compile("[^\\d.]");
+    private static final Pattern DIGITS_PATTERN = Pattern.compile("[^\\D.]");
 
     private StringUtils() {
     }
@@ -349,5 +359,133 @@ public final class StringUtils {
      */
     public static String removeWhitespaces(String source) {
         return isBlank(source) ? EMPTY : WHITESPACES_PATTERN.matcher(source).replaceAll(EMPTY);
+    }
+
+    /**
+     * Returs provided value {@link String} or {@link String} provided by default
+     * value {@link Supplier} if value is null, empty or blank
+     *
+     * @param value                that can be null, blank or empty
+     * @param defaultValueSupplier fallback value {@link Supplier}
+     * @return value if it is not null, blank or empty, otherwise default value {@link Supplier} invoke result
+     * @since 0.0.8
+     */
+    public static String notBlankOrElseGet(String value, Supplier<String> defaultValueSupplier) {
+        return isBlank(value) ? defaultValueSupplier.get() : value;
+    }
+
+    /**
+     * Removes all digit chars if non-null {@link String} is provided, otherwise returns empty string
+     *
+     * @param source {@link String} that should be processed
+     * @return {@link String} with non-numeric chars only or empty string if input string is blank or null
+     * @since 0.0.8
+     */
+    public static String removeDigits(String source) {
+        return isBlank(source) ? EMPTY : DIGITS_PATTERN.matcher(source).replaceAll(EMPTY);
+    }
+
+    /**
+     * Replaces provided {@link CharSequence} values in provided {@link String} with corresponding replacement sequences
+     *
+     * @param source       {@link String} that should be processed
+     * @param replacements {@link Map} which contains {@link CharSequence} that should be replaced as key,
+     *                     and {@link CharSequence} that should be used as replacement as value
+     * @return original string if replacement map is empty or null,
+     * processed {@link String} or empty string if input string is blank or null
+     * @since 0.0.8
+     */
+    public static String replace(String source, Map<CharSequence, CharSequence> replacements) {
+        if (isEmpty(source)) {
+            return EMPTY;
+        }
+        Single<String> result = new Single<>(source);
+        CollectionUtils.safeForEach(
+                replacements,
+                (from, to) -> result.modifyValueIfSatisfies(s -> s.replace(from, to), v -> v.contains(from))
+        );
+        return result.getValue();
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which replaces provided {@link CharSequence} values in provided {@link String}
+     * with corresponding replacement sequences
+     *
+     * @param replacements {@link Map} which contains {@link CharSequence} that should be replaced as key,
+     *                     and {@link CharSequence} that should be used as replacement as value
+     * @return {@link UnaryOperator} which replaces provided {@link CharSequence} values
+     * in provided {@link String} with corresponding replacement sequences,
+     * see {@link com.hijackermax.utils.lang.StringUtils#replace(String, Map)} for additional details
+     * @since 0.0.8
+     */
+    public static UnaryOperator<String> replace(Map<CharSequence, CharSequence> replacements) {
+        return source -> replace(source, replacements);
+    }
+
+    /**
+     * Replaces provided substring value in source {@link String} with provided replacement {@link String}
+     *
+     * @param source {@link String} that should be processed
+     * @param from   substring that should be replaced
+     * @param to     replacement substring
+     * @return original string if from or to substrings are empty or null,
+     * processed {@link String} or empty string if input string is blank or null
+     * @since 0.0.8
+     */
+    public static String replaceIgnoreCase(String source, String from, String to) {
+        if (isEmpty(from) || isEmpty(to)) {
+            return source;
+        }
+        return isBlank(source) ? EMPTY : source.replaceAll(String.format("(?i)%s", from), to);
+    }
+
+    /**
+     * Provides {@link Predicate} which checks if evaluated string starts with provided prefix
+     *
+     * @param prefix the prefix
+     * @return {@link Predicate} which checks if evaluated string starts with provided prefix,
+     * if source or prefix are empty or null result will be false
+     * @since 0.0.8
+     */
+    public static Predicate<String> startsWith(String prefix) {
+        return source -> isNotEmpty(source) && isNotEmpty(prefix) && source.startsWith(prefix);
+    }
+
+    /**
+     * Provides {@link Predicate} which checks if evaluated string ends with provided suffix
+     *
+     * @param suffix the suffix
+     * @return {@link Predicate} which checks if evaluated string ends with provided suffix,
+     * if source or suffix are empty or null result will be false
+     * @since 0.0.8
+     */
+    public static Predicate<String> endsWith(String suffix) {
+        return source -> isNotEmpty(source) && isNotEmpty(suffix) && source.endsWith(suffix);
+    }
+
+    /**
+     * Provides {@link Predicate} which checks if evaluated string contains provided fragment
+     *
+     * @param fragment to search for
+     * @return {@link Predicate} which checks if evaluated string contains provided fragment,
+     * if source or fragment are empty or null result will be false
+     * @since 0.0.8
+     */
+    public static Predicate<String> contains(String fragment) {
+        return source -> isNotEmpty(source) && isNotEmpty(fragment) && source.contains(fragment);
+    }
+
+    /**
+     * Provides {@link Predicate} which checks if evaluated string satisfies length comparison
+     *
+     * @param operator  the length comparison operator
+     * @param reference thr reference value that should be compared to string length
+     * @return {@link Predicate} which checks if evaluated string satisfies length comparison,
+     * if source is empty or null result will be false
+     * @throws IllegalArgumentException if reference value is equal to zero or negative
+     * @since 0.0.8
+     */
+    public static Predicate<String> hasLength(ComparisonOperators operator, int reference) {
+        return source -> isNotEmpty(source) && NumberUtils.compare(source.length(), requireGreaterThanZero(reference), operator);
     }
 }

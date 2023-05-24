@@ -324,4 +324,48 @@ public final class MathUtils {
     public static UnaryOperator<Double> add(double b) {
         return a -> Double.sum(a, b);
     }
+
+    /**
+     * Provides {@link UnaryOperator} which multiplies provided value by {@link Function} argument as per the * operator
+     *
+     * @param b multiplicand
+     * @return {@link UnaryOperator} which multiplies provided value to {@link Function} argument
+     * @since 0.0.8
+     */
+    public static UnaryOperator<Integer> multiply(int b) {
+        return a -> a * b;
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which multiplies provided value by {@link Function} argument as per the * operator
+     *
+     * @param b multiplicand
+     * @return {@link UnaryOperator} which multiplies provided value to {@link Function} argument
+     * @since 0.0.8
+     */
+    public static UnaryOperator<Long> multiply(long b) {
+        return a -> a * b;
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which multiplies provided value by {@link Function} argument as per the * operator
+     *
+     * @param b multiplicand
+     * @return {@link UnaryOperator} which multiplies provided value to {@link Function} argument
+     * @since 0.0.8
+     */
+    public static UnaryOperator<Float> multiply(float b) {
+        return a -> a * b;
+    }
+
+    /**
+     * Provides {@link UnaryOperator} which multiplies provided value by {@link Function} argument as per the * operator
+     *
+     * @param b multiplicand
+     * @return {@link UnaryOperator} which multiplies provided value to {@link Function} argument
+     * @since 0.0.8
+     */
+    public static UnaryOperator<Double> multiply(double b) {
+        return a -> a * b;
+    }
 }

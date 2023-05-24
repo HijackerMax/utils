@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -111,5 +112,18 @@ public final class ObjectUtils {
              var inputStream = new GZIPInputStream(byteArrayInputStream)) {
             return inputStream.readAllBytes();
         }
+    }
+
+    /**
+     * Returs provided value or invokes default value {@link Supplier} if value is null
+     *
+     * @param value                that can be null
+     * @param defaultValueSupplier fallback value {@link Supplier}
+     * @param <T>                  value type
+     * @return value if it is not null or default value {@link Supplier} invoke result
+     * @since 0.0.8
+     */
+    public static <T> T valueOrGetDefault(T value, Supplier<T> defaultValueSupplier) {
+        return Objects.isNull(value) ? defaultValueSupplier.get() : value;
     }
 }

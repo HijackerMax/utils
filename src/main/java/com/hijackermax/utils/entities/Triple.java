@@ -4,6 +4,7 @@ import com.hijackermax.utils.functional.TriConsumer;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
@@ -20,7 +21,7 @@ public class Triple<K, M, V> extends Tuple<K, V> {
     private M middle;
 
     /**
-     * Creates new instance of {@link Triple} with provided key, middle and value
+     * Creates instance of {@link Triple} with provided key, middle and value
      *
      * @param key    that should be wrapped
      * @param middle that should be wrapped
@@ -29,6 +30,21 @@ public class Triple<K, M, V> extends Tuple<K, V> {
     public Triple(K key, M middle, V value) {
         super(key, value);
         this.middle = middle;
+    }
+
+    /**
+     * Creates instance of {@link Triple} with provided key, middle and value
+     *
+     * @param key    that should be wrapped
+     * @param middle that should be wrapped
+     * @param value  that should be wrapped
+     * @param <K>    key type
+     * @param <M>    middle type
+     * @param <V>    value type
+     * @return instance of {@link Triple} with provided key, middle and value
+     */
+    public static <K, M, V> Triple<K, M, V> of(K key, M middle, V value) {
+        return new Triple<>(key, middle, value);
     }
 
     /**
@@ -62,6 +78,18 @@ public class Triple<K, M, V> extends Tuple<K, V> {
      */
     public void modifyMiddle(UnaryOperator<M> processor) {
         this.middle = processor.apply(middle);
+    }
+
+    /**
+     * Provides ability to modify existing middle if it satisfies provided predicate
+     *
+     * @param processor       {@link UnaryOperator} which will be applied to existing middle
+     * @param middlePredicate {@link Predicate} which will be used to check compatibility of existing middle
+     */
+    public void modifyMiddleIfSatisfies(UnaryOperator<M> processor, Predicate<M> middlePredicate) {
+        if (middlePredicate.test(middle)) {
+            this.middle = processor.apply(middle);
+        }
     }
 
     /**

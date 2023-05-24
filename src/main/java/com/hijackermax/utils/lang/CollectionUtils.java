@@ -1,10 +1,28 @@
 package com.hijackermax.utils.lang;
 
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Collector;
+import com.hijackermax.utils.misc.EnumerationSpliterator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Set of utility methods that can help to work with Java collections
@@ -440,43 +458,6 @@ public final class CollectionUtils {
     }
 
     /**
-     * Provides grouping collector which allows null key
-     *
-     * @param keyExtractor {@link Function} for key extraction
-     * @param <T>          input collection elements type
-     * @param <K>          key type
-     * @return Grouping collector with supported null key
-     * @since 0.0.1
-     */
-    public static <T, K> Collector<T, ?, Map<K, List<T>>> groupingByWithNull(Function<? super T, ? extends K> keyExtractor) {
-        return groupingByWithNull(keyExtractor, Function.identity());
-    }
-
-    /**
-     * Provides grouping collector which allows null key
-     *
-     * @param keyExtractor   {@link Function} for key extraction
-     * @param valueExtractor {@link Function} for values extraction
-     * @param <T>            input collection elements type
-     * @param <K>            key type
-     * @param <V>            value type
-     * @return Grouping collector with supported null key
-     * @since 0.0.1
-     */
-    public static <T, K, V> Collector<T, ?, Map<K, List<V>>> groupingByWithNull(Function<? super T, ? extends K> keyExtractor,
-                                                                                Function<? super T, ? extends V> valueExtractor) {
-        return Collectors.toMap(
-                keyExtractor,
-                v -> Collections.singletonList(valueExtractor.apply(v)),
-                (prev, curr) -> {
-                    List<V> result = new ArrayList<>(prev.size() + curr.size());
-                    result.addAll(prev);
-                    result.addAll(curr);
-                    return result;
-                });
-    }
-
-    /**
      * Conducts null-safe conversion of input {@link Collection} to {@link Map} using provided key extractor {@link Function}
      *
      * @param values        input {@link Collection}
@@ -649,21 +630,6 @@ public final class CollectionUtils {
     }
 
     /**
-     * Provides toString {@link Collector} for stream of {@link Character}
-     *
-     * @return {@link Collector} which concatenates {@link Character} elements in encounter order
-     * @since 0.0.4
-     */
-    public static Collector<Character, ?, String> toStringCollector() {
-        return Collector.of(
-                StringBuffer::new,
-                StringBuffer::append,
-                StringBuffer::append,
-                StringBuffer::toString
-        );
-    }
-
-    /**
      * Checks if input {@link Collection} contains provided value
      *
      * @param source {@link Collection} that should be checked
@@ -755,5 +721,72 @@ public final class CollectionUtils {
     public static <T> boolean safeContainsAny(Collection<? super T> source, Collection<? extends T> target) {
         return Objects.nonNull(source) && Objects.nonNull(target) && target.stream()
                 .anyMatch(source::contains);
+    }
+
+    /**
+     * Safely provides value from source {@link Map} that can be null or doesn't contain provided key or value is null
+     *
+     * @param source        {@link Map}
+     * @param key           for required value
+     * @param valueConsumer {@link Consumer} of existing non-null value
+     * @param <K>           type of the map key
+     * @param <V>           type of the map value
+     * @since 0.0.8
+     */
+    public static <K, V> void safeProvide(Map<? extends K, ? extends V> source, K key, Consumer<? super V> valueConsumer) {
+        ofNullable(source)
+                .map(m -> m.get(key))
+                .ifPresent(valueConsumer);
+    }
+
+    /**
+     * Provides value {@link Consumer} which puts consumed value in provided map by provided key
+     *
+     * @param source {@link Map}
+     * @param key    for provided value to put into the source {@link Map}
+     * @param <K>    type of the map key
+     * @param <V>    type of the map value
+     * @return value {@link Consumer} which puts consumed value in provided map by provided key
+     * @since 0.0.8
+     */
+    public static <K, V> Consumer<V> putWithValue(Map<? super K, ? super V> source, K key) {
+        return value -> source.put(key, value);
+    }
+
+    /**
+     * Provides key {@link Consumer} which puts provided value in provided map by consumed key
+     *
+     * @param source {@link Map}
+     * @param value  to put into the source {@link Map}
+     * @param <K>    type of the map key
+     * @param <V>    type of the map value
+     * @return key {@link Consumer} which puts provided value in provided map by consumed key
+     * @since 0.0.8
+     */
+    public static <K, V> Consumer<K> putWithKey(Map<? super K, ? super V> source, V value) {
+        return key -> source.put(key, value);
+    }
+
+    /**
+     * Checks if {@link Enumeration} is empty or null
+     *
+     * @param value {@link Enumeration} that should be checked
+     * @return true if {@link Enumeration} is empty or null
+     * @since 0.0.8
+     */
+    public static boolean isEmpty(Enumeration<?> value) {
+        return Objects.isNull(value) || !value.hasMoreElements();
+    }
+
+    /**
+     * Returns stream from input {@link Enumeration} if it is not null or empty, or empty stream
+     *
+     * @param input source enumeration
+     * @param <T>   {@link Enumeration} items type
+     * @return stream consisting of elements from input {@link Enumeration} or empty stream
+     * @since 0.0.8
+     */
+    public static <T> Stream<T> safeStreamOf(Enumeration<T> input) {
+        return isEmpty(input) ? Stream.empty() : EnumerationSpliterator.ofOrdered(input).stream();
     }
 }

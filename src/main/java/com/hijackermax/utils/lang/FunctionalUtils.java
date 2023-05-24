@@ -1,8 +1,11 @@
 package com.hijackermax.utils.lang;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -69,5 +72,21 @@ public final class FunctionalUtils {
             exceptionConsumer.accept(e);
         }
         return fallback.get();
+    }
+
+    /**
+     * Provides {@link Predicate} which allows to do value transformation and validation of new value with provided {@link Predicate}
+     *
+     * @param transformer        {@link Function} which transforms provided value to different
+     * @param extractedPredicate {@link Predicate} for transformed value
+     * @param <T>                source value type
+     * @param <U>                transformed value type
+     * @return {@link Predicate} which allows to do value transformation and validation of new value with provided {@link Predicate},
+     * if source value is null result will be false
+     * @since 0.0.8
+     */
+    public static <T, U> Predicate<T> mappedPredicate(Function<T, U> transformer, Predicate<U> extractedPredicate) {
+        return source -> Objects.nonNull(source) &&
+                Objects.requireNonNull(transformer).andThen(Objects.requireNonNull(extractedPredicate)::test).apply(source);
     }
 }

@@ -2,6 +2,7 @@ package com.hijackermax.utils.entities;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
@@ -28,6 +29,17 @@ public class Single<V> {
      */
     public Single(V value) {
         this.value = value;
+    }
+
+    /**
+     * Creates instance of {@link Single} with provided value
+     *
+     * @param value that should be wrapped
+     * @param <V>   value type
+     * @return instance of {@link Single} with provided value
+     */
+    public static <V> Single<V> of(V value) {
+        return new Single<>(value);
     }
 
     /**
@@ -64,6 +76,18 @@ public class Single<V> {
      */
     public void modifyValue(UnaryOperator<V> processor) {
         this.value = processor.apply(value);
+    }
+
+    /**
+     * Provides ability to modify existing value if it satisfies provided predicate
+     *
+     * @param processor      {@link UnaryOperator} which will be applied to existing value
+     * @param valuePredicate {@link Predicate} which will be used to check compatibility of existing value
+     */
+    public void modifyValueIfSatisfies(UnaryOperator<V> processor, Predicate<V> valuePredicate) {
+        if (valuePredicate.test(value)) {
+            this.value = processor.apply(value);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package com.hijackermax.utils.entities;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
@@ -18,7 +19,7 @@ public class Tuple<K, V> extends Single<V> {
     private K key;
 
     /**
-     * Creates new instance of {@link Tuple} with provided key and value
+     * Creates instance of {@link Tuple} with provided key and value
      *
      * @param key   that should be wrapped
      * @param value that should be wrapped
@@ -26,6 +27,19 @@ public class Tuple<K, V> extends Single<V> {
     public Tuple(K key, V value) {
         super(value);
         this.key = key;
+    }
+
+    /**
+     * Creates instance of {@link Tuple} with provided key and value
+     *
+     * @param key   that should be wrapped
+     * @param value that should be wrapped
+     * @param <K>   key type
+     * @param <V>   value type
+     * @return instance of {@link Tuple} with provided key and value
+     */
+    public static <K, V> Tuple<K, V> of(K key, V value) {
+        return new Tuple<>(key, value);
     }
 
     /**
@@ -59,6 +73,18 @@ public class Tuple<K, V> extends Single<V> {
      */
     public void modifyKey(UnaryOperator<K> processor) {
         this.key = processor.apply(key);
+    }
+
+    /**
+     * Provides ability to modify existing key if it satisfies provided predicate
+     *
+     * @param processor    {@link UnaryOperator} which will be applied to existing key
+     * @param keyPredicate {@link Predicate} which will be used to check compatibility of existing key
+     */
+    public void modifyKeyIfSatisfies(UnaryOperator<K> processor, Predicate<K> keyPredicate) {
+        if (keyPredicate.test(key)) {
+            this.key = processor.apply(key);
+        }
     }
 
     /**

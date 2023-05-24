@@ -10,13 +10,20 @@ Licensed under the Apache 2.0 License
 #### Geographical utils
 * Mercator(EPSG:3857) to WSG84 convertor
 * WSG84 to Mercator(EPSG:3857) convertor
-* Distance calculation between two WSG84 points 
+* Distance calculation between two WSG84 points
+
+#### Collector utils
+* Collectors for Java streams
 
 #### Collections utils
 * Null-safe methods to work with collections
 
 #### Optional utils
 * Optional providers for different situations
+
+#### Functional utils
+
+* Functional utility methods
 
 #### String Utils
 * Null-safe methods to work with Strings
@@ -32,6 +39,10 @@ Licensed under the Apache 2.0 License
 
 #### Math utils
 * Methods that can help with computations
+
+#### Number utils
+
+* Methods that can help with numbers
 
 #### Random utils
 * Methods that can provide some random values or randomize arrays
@@ -49,6 +60,14 @@ Licensed under the Apache 2.0 License
 * Single
 * Tuple
 * Triple
+
+#### Builders
+
+* List builder
+* Set builder
+* Map builder
+* Transformer
+* XBuilder
 
 #### IO
 
@@ -87,7 +106,7 @@ Just add this to your **pom.xml**
 
 <dependency>
     <groupId>com.hijackermax</groupId>
-  <artifactId>utils</artifactId>
-  <version>0.0.7</version>
+    <artifactId>utils</artifactId>
+    <version>0.0.8</version>
 </dependency>
 ```
