@@ -543,4 +543,30 @@ class CollectionUtilsTest {
         assertEquals(0L, CollectionUtils.safeStreamOf(new Vector<>().elements()).count());
         assertEquals(3L, CollectionUtils.safeStreamOf(new Vector<>(List.of(true, false, true))).count());
     }
+
+    @Test
+    void testSafeAnyMatch() {
+        assertFalse(CollectionUtils.safeAnyMatch(null, Objects::nonNull));
+        assertFalse(CollectionUtils.safeAnyMatch(List.of(), Objects::nonNull));
+        assertTrue(CollectionUtils.safeAnyMatch(List.of(1, 2, 3), Objects::nonNull));
+        assertTrue(CollectionUtils.safeAnyMatch(List.of(1), Objects::nonNull));
+    }
+
+    @Test
+    void testSafeAllMatch() {
+        assertFalse(CollectionUtils.safeAllMatch(null, Objects::nonNull));
+        assertFalse(CollectionUtils.safeAllMatch(List.of(), Objects::nonNull));
+        assertFalse(CollectionUtils.safeAllMatch(List.of(1, 2, 4, 10), v -> v < 5));
+        assertTrue(CollectionUtils.safeAllMatch(List.of(1, 2, 3), Objects::nonNull));
+        assertTrue(CollectionUtils.safeAllMatch(List.of(1), Objects::nonNull));
+    }
+
+    @Test
+    void testSafeNoneMatch() {
+        assertFalse(CollectionUtils.safeNoneMatch(List.of(1, 2, 4, 10), v -> v < 5));
+        assertTrue(CollectionUtils.safeNoneMatch(List.of(), Objects::nonNull));
+        assertTrue(CollectionUtils.safeNoneMatch(null, Objects::nonNull));
+        assertTrue(CollectionUtils.safeNoneMatch(List.of(1, 2, 3), v -> v > 5));
+        assertTrue(CollectionUtils.safeNoneMatch(List.of(1), v -> v > 5));
+    }
 }

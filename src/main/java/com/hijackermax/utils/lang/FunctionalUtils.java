@@ -89,4 +89,16 @@ public final class FunctionalUtils {
         return source -> Objects.nonNull(source) &&
                 Objects.requireNonNull(transformer).andThen(Objects.requireNonNull(extractedPredicate)::test).apply(source);
     }
+
+    /**
+     * Provides empty value {@link Consumer}
+     *
+     * @param <T> supplied value type
+     * @return empty value consumer
+     * @since 0.0.9
+     */
+    public static <T> Consumer<T> emptyConsumer() {
+        return v -> {
+        };
+    }
 }

@@ -1,9 +1,11 @@
 package com.hijackermax.utils.lang;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
@@ -184,6 +186,106 @@ public final class DateUtils {
             throw new IllegalArgumentException("Offset should not be negative or zero");
         }
         return between(value, shiftDateByMs(target, -offsetMs), shiftDateByMs(target, offsetMs));
+    }
+
+    /**
+     * Checks if provided {@link ChronoLocalDate} value is before {@link ChronoLocalDate} point in time
+     *
+     * @param value       the value that should be checked
+     * @param pointInTime some date that value should be compared to
+     * @return true if both dates are not null and provided value is before provided point of time, otherwise false
+     * @since 0.0.9
+     */
+    public static boolean safeBefore(ChronoLocalDate value, ChronoLocalDate pointInTime) {
+        return Objects.nonNull(value) && Objects.nonNull(pointInTime) && value.isBefore(pointInTime);
+    }
+
+    /**
+     * Checks if provided {@link ChronoLocalDate} value is after {@link ChronoLocalDate} point in time
+     *
+     * @param value       the value that should be checked
+     * @param pointInTime some date that value should be compared to
+     * @return true if both dates are not null and provided value is after provided point of time, otherwise false
+     * @since 0.0.9
+     */
+    public static boolean safeAfter(ChronoLocalDate value, ChronoLocalDate pointInTime) {
+        return Objects.nonNull(value) && Objects.nonNull(pointInTime) && value.isAfter(pointInTime);
+    }
+
+    /**
+     * Checks if provided {@link ChronoLocalDate} value is after or the same as {@link ChronoLocalDate} point in time
+     *
+     * @param value       the value that should be checked
+     * @param pointInTime some date that value should be compared to
+     * @return true if both dates are not null and provided value is after or equal to provided point of time, otherwise false
+     * @since 0.0.9
+     */
+    public static boolean safeAfterOrSame(ChronoLocalDate value, ChronoLocalDate pointInTime) {
+        return Objects.nonNull(value) && Objects.nonNull(pointInTime) && !value.isBefore(pointInTime);
+    }
+
+    /**
+     * Checks if provided {@link ChronoLocalDate} value is before or the same as {@link ChronoLocalDate} point in time
+     *
+     * @param value       the value that should be checked
+     * @param pointInTime some date that value should be compared to
+     * @return true if both dates are not null and provided value is before or equal to provided point of time, otherwise false
+     * @since 0.0.9
+     */
+    public static boolean safeBeforeOrSame(ChronoLocalDate value, ChronoLocalDate pointInTime) {
+        return Objects.nonNull(value) && Objects.nonNull(pointInTime) && !value.isAfter(pointInTime);
+    }
+
+    /**
+     * Provides null-safe check if provided value {@link ChronoLocalDate} between two provided boundary {@link ChronoLocalDate} or equal to one of them
+     *
+     * @param value      date that should be checked
+     * @param leftBound  start boundary date
+     * @param rightBound end boundary date
+     * @return true if date between provided boundaries, false if not or one of the provided dates is null
+     * @since 0.0.9
+     */
+    public static boolean between(ChronoLocalDate value, ChronoLocalDate leftBound, ChronoLocalDate rightBound) {
+        if (Objects.isNull(value) || Objects.isNull(leftBound) || Objects.isNull(rightBound)) {
+            return false;
+        }
+        return !leftBound.isAfter(value) && !rightBound.isBefore(value);
+    }
+
+    /**
+     * Shifts provided {@link LocalDate} with provided amount of days
+     *
+     * @param source     source date
+     * @param shiftValue amount of days that should be used to shift source date
+     * @return shifted date, or null if source is null
+     * @since 0.0.9
+     */
+    public static LocalDate shiftDateByDays(LocalDate source, long shiftValue) {
+        return Objects.isNull(source) ? null : source.plusDays(shiftValue);
+    }
+
+    /**
+     * Shifts provided {@link LocalDate} with provided amount of months
+     *
+     * @param source     source date
+     * @param shiftValue amount of months that should be used to shift source date
+     * @return shifted date, or null if source is null
+     * @since 0.0.9
+     */
+    public static LocalDate shiftDateByMonths(LocalDate source, long shiftValue) {
+        return Objects.isNull(source) ? null : source.plusMonths(shiftValue);
+    }
+
+    /**
+     * Shifts provided {@link LocalDate} with provided amount of years
+     *
+     * @param source     source date
+     * @param shiftValue amount of years that should be used to shift source date
+     * @return shifted date, or null if source is null
+     * @since 0.0.9
+     */
+    public static LocalDate shiftDateByYears(LocalDate source, long shiftValue) {
+        return Objects.isNull(source) ? null : source.plusYears(shiftValue);
     }
 
     private static ZonedDateTime getZonedDateTime(Date source) {

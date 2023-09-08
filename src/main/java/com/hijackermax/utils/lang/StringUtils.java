@@ -9,13 +9,18 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static com.hijackermax.utils.lang.CollectionUtils.safeStreamOf;
 import static com.hijackermax.utils.lang.NumberUtils.requireGreaterThanZero;
 
 /**
@@ -205,7 +210,7 @@ public final class StringUtils {
     public static <T> String join(Collection<? extends T> collection,
                                   String delimiter,
                                   Function<? super T, String> toStringConverter) {
-        return CollectionUtils.safeStreamOf(collection)
+        return safeStreamOf(collection)
                 .filter(Objects::nonNull)
                 .map(toStringConverter)
                 .map(StringUtils::trimToEmpty)
@@ -487,5 +492,129 @@ public final class StringUtils {
      */
     public static Predicate<String> hasLength(ComparisonOperators operator, int reference) {
         return source -> isNotEmpty(source) && NumberUtils.compare(source.length(), requireGreaterThanZero(reference), operator);
+    }
+
+    /**
+     * Passes provided {@link String} if not empty to the provided string {@link Consumer}
+     *
+     * @param value         the value to check
+     * @param valueConsumer non-empty value consumer
+     * @since 0.0.9
+     */
+    public static void ifNotEmpty(String value, Consumer<String> valueConsumer) {
+        if (isNotEmpty(value)) {
+            valueConsumer.accept(value);
+        }
+    }
+
+    /**
+     * Passes provided {@link String} if not blank to the provided string {@link Consumer}
+     *
+     * @param value         the value to check
+     * @param valueConsumer non-blank value consumer
+     * @since 0.0.9
+     */
+    public static void ifNotBlank(String value, Consumer<String> valueConsumer) {
+        if (isNotBlank(value)) {
+            valueConsumer.accept(value);
+        }
+    }
+
+    /**
+     * Returns capitalized variant of provided {@link String} with space as default word delimiter
+     *
+     * @param source the value to capitalize
+     * @return capitalized string or empty string if null or blank string is provided
+     * @since 0.0.9
+     */
+    public static String capitalize(String source) {
+        return capitalize(source, ' ');
+    }
+
+    /**
+     * Returns capitalized variant of provided {@link String} with provided words delimiters
+     *
+     * @param source     the value to capitalize
+     * @param delimiters the words delimiters
+     * @return capitalized string or empty string if null or blank string is provided or source string if no delimiters provided
+     * @since 0.0.9
+     */
+    public static String capitalize(String source, char... delimiters) {
+        if (isBlank(source)) {
+            return EMPTY;
+        }
+        if (Objects.isNull(delimiters) || 0 == delimiters.length) {
+            return source;
+        }
+
+        Set<Integer> delimiterValues = IntStream.range(0, delimiters.length)
+                .mapToObj(idx -> Character.codePointAt(delimiters, idx))
+                .collect(Collectors.toSet());
+
+        String lowerCaseSource = source.trim().toLowerCase();
+        int sourceLength = lowerCaseSource.length();
+        int[] resultValues = new int[sourceLength];
+        int resultEndIdx = 0;
+        boolean capitalizeNext = false;
+        for (int idx = 0; idx < sourceLength; ) {
+            int charAt = lowerCaseSource.codePointAt(idx);
+            if (delimiterValues.contains(charAt)) {
+                capitalizeNext = true;
+                idx += Character.charCount(charAt);
+                resultValues[resultEndIdx++] = charAt;
+                continue;
+            }
+            if (capitalizeNext || 0 == idx) {
+                int newValue = Character.toTitleCase(charAt);
+                idx += Character.charCount(newValue);
+                resultValues[resultEndIdx++] = newValue;
+                capitalizeNext = false;
+                continue;
+            }
+            idx += Character.charCount(charAt);
+            resultValues[resultEndIdx++] = charAt;
+        }
+        return new String(resultValues, 0, resultEndIdx);
+    }
+
+    /**
+     * Joins provided {@link Collection} of {@link CharSequence} with provided delimiter
+     *
+     * @param elements  collection of charSequences to join
+     * @param delimiter the delimiter
+     * @return joint {@link String} or empty string if provided collection is empty or null
+     * @since 0.0.9
+     */
+    public static String safeJoin(Collection<? extends CharSequence> elements, CharSequence delimiter) {
+        return CollectionUtils.safeStreamOf(elements)
+                .collect(Collectors.joining(delimiter));
+    }
+
+    /**
+     * Passes provided {@link String} pair if both of them not empty to the provided string {@link BiConsumer}
+     *
+     * @param left           the first value to check
+     * @param right          the second value to check
+     * @param valuesConsumer non-empty values consumer
+     * @since 0.0.9
+     */
+    public static void ifBothNotEmpty(String left, String right, BiConsumer<String, String> valuesConsumer) {
+        if (isNotEmpty(left) && isNotEmpty(right)) {
+            valuesConsumer.accept(left, right);
+        }
+    }
+
+    /**
+     * Passes provided {@link String} pair if both of them not blank to the provided string {@link BiConsumer}
+     *
+     * @param left           the first value to check
+     * @param right          the second value to check
+     * @param valuesConsumer non-blank values consumer
+     * @since 0.0.9
+     */
+    public static void ifBothNotBlank(String left, String right, BiConsumer<String, String> valuesConsumer) {
+        if (isNotBlank(left) && isNotBlank(right)) {
+            valuesConsumer.accept(left, right);
+        }
     }
 }

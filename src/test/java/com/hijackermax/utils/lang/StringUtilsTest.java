@@ -1,6 +1,8 @@
 package com.hijackermax.utils.lang;
 
 import com.hijackermax.utils.encoders.Base122;
+import com.hijackermax.utils.entities.Single;
+import com.hijackermax.utils.entities.Tuple;
 import com.hijackermax.utils.enums.ComparisonOperators;
 import org.junit.jupiter.api.Test;
 
@@ -325,5 +327,92 @@ class StringUtilsTest {
                 .filter(StringUtils.hasLength(ComparisonOperators.EQ, 3))
                 .collect(Collectors.toList());
         assertLinesMatch(List.of("Foo", "Bar"), filteredList);
+    }
+
+    @Test
+    void testIfNotEmpty() {
+        Single<String> valueHolder = new Single<>("Original");
+        StringUtils.ifNotEmpty(null, valueHolder::setValue);
+        assertEquals("Original", valueHolder.getValue());
+        StringUtils.ifNotEmpty(StringUtils.EMPTY, valueHolder::setValue);
+        assertEquals("Original", valueHolder.getValue());
+        StringUtils.ifNotEmpty(StringUtils.BLANK, valueHolder::setValue);
+        assertEquals(StringUtils.BLANK, valueHolder.getValue());
+        StringUtils.ifNotEmpty("Foo", valueHolder::setValue);
+        assertEquals("Foo", valueHolder.getValue());
+    }
+
+    @Test
+    void testIfNotBlank() {
+        Single<String> valueHolder = new Single<>("Original");
+        StringUtils.ifNotBlank(null, valueHolder::setValue);
+        assertEquals("Original", valueHolder.getValue());
+        StringUtils.ifNotBlank(StringUtils.EMPTY, valueHolder::setValue);
+        assertEquals("Original", valueHolder.getValue());
+        StringUtils.ifNotBlank(StringUtils.BLANK, valueHolder::setValue);
+        assertEquals("Original", valueHolder.getValue());
+        StringUtils.ifNotBlank("Foo", valueHolder::setValue);
+        assertEquals("Foo", valueHolder.getValue());
+    }
+
+    @Test
+    void testCapitalizeDefault() {
+        assertEquals(StringUtils.EMPTY, StringUtils.capitalize(null));
+        assertEquals("Foo Bar", StringUtils.capitalize("foo bar"));
+        assertEquals("Foo Bar", StringUtils.capitalize("FOO BAR"));
+        assertEquals("Foo Bar", StringUtils.capitalize("fOO bAR"));
+        assertEquals("Foo Bar", StringUtils.capitalize("fOo bAr"));
+    }
+
+    @Test
+    void testCapitalize() {
+        assertEquals(StringUtils.EMPTY, StringUtils.capitalize(null, ' '));
+        assertEquals("Foo@Bar", StringUtils.capitalize("foo@bar", ' ', '@'));
+        assertEquals("Foo Bar-Test", StringUtils.capitalize("FOO BAR-TEST", ' ', '-'));
+        assertEquals("Foo B$Ar", StringUtils.capitalize("fOO b$AR", ' ', '$'));
+        assertEquals("Foo Ba$R", StringUtils.capitalize("fOo bA$r", ' ', '$'));
+    }
+
+    @Test
+    void testSafeJoin() {
+        assertEquals(StringUtils.EMPTY, StringUtils.safeJoin(null, ","));
+        assertEquals(StringUtils.EMPTY, StringUtils.safeJoin(Collections.emptyList(), ","));
+        assertEquals("Foo", StringUtils.safeJoin(List.of("Foo"), ","));
+        assertEquals("Foo,Bar", StringUtils.safeJoin(List.of("Foo", "Bar"), ","));
+        assertEquals("Foo$Bar$Test", StringUtils.safeJoin(List.of("Foo", "Bar", "Test"), "$"));
+    }
+
+    @Test
+    void testIfBothNotEmpty() {
+        Tuple<String, String> valueHolder = new Tuple<>("OriginalL", "OriginalR");
+        StringUtils.ifBothNotEmpty(null, null, valueHolder::setPair);
+        assertEquals("OriginalL", valueHolder.getKey());
+        assertEquals("OriginalR", valueHolder.getValue());
+        StringUtils.ifBothNotEmpty(StringUtils.EMPTY, StringUtils.EMPTY, valueHolder::setPair);
+        assertEquals("OriginalL", valueHolder.getKey());
+        assertEquals("OriginalR", valueHolder.getValue());
+        StringUtils.ifBothNotEmpty(StringUtils.BLANK, StringUtils.BLANK, valueHolder::setPair);
+        assertEquals(StringUtils.BLANK, valueHolder.getKey());
+        assertEquals(StringUtils.BLANK, valueHolder.getValue());
+        StringUtils.ifBothNotEmpty("Foo", "Bar", valueHolder::setPair);
+        assertEquals("Foo", valueHolder.getKey());
+        assertEquals("Bar", valueHolder.getValue());
+    }
+
+    @Test
+    void testIfBothNotBlank() {
+        Tuple<String, String> valueHolder = new Tuple<>("OriginalL", "OriginalR");
+        StringUtils.ifBothNotBlank(null, null, valueHolder::setPair);
+        assertEquals("OriginalL", valueHolder.getKey());
+        assertEquals("OriginalR", valueHolder.getValue());
+        StringUtils.ifBothNotBlank(StringUtils.EMPTY, StringUtils.EMPTY, valueHolder::setPair);
+        assertEquals("OriginalL", valueHolder.getKey());
+        assertEquals("OriginalR", valueHolder.getValue());
+        StringUtils.ifBothNotBlank(StringUtils.BLANK, StringUtils.BLANK, valueHolder::setPair);
+        assertEquals("OriginalL", valueHolder.getKey());
+        assertEquals("OriginalR", valueHolder.getValue());
+        StringUtils.ifBothNotBlank("Foo", "Bar", valueHolder::setPair);
+        assertEquals("Foo", valueHolder.getKey());
+        assertEquals("Bar", valueHolder.getValue());
     }
 }

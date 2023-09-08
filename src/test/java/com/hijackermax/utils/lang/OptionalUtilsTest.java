@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,5 +55,14 @@ class OptionalUtilsTest {
         assertTrue(OptionalUtils.ofBlank(null).isEmpty());
         assertTrue(OptionalUtils.ofBlank(" ").isEmpty());
         assertTrue(OptionalUtils.ofBlank("Test").isPresent());
+    }
+
+    @Test
+    void ofFind() {
+        assertTrue(OptionalUtils.ofFind(Pattern.compile("[^\\D.]"), null).isEmpty());
+        assertTrue(OptionalUtils.ofFind(null, "12345abc").isEmpty());
+        assertTrue(OptionalUtils.ofFind(null, null).isEmpty());
+        assertTrue(OptionalUtils.ofFind(Pattern.compile("[^\\D.]"), "12345abc").isPresent());
+        assertTrue(OptionalUtils.ofFind(Pattern.compile("[^\\D.]"), "abc").isEmpty());
     }
 }

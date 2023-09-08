@@ -107,6 +107,6 @@ Just add this to your **pom.xml**
 <dependency>
     <groupId>com.hijackermax</groupId>
     <artifactId>utils</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
 </dependency>
 ```

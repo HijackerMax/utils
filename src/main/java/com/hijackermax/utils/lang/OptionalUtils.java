@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 
 /**
  * Useful optional providers
@@ -98,5 +101,20 @@ public final class OptionalUtils {
      */
     public static <T, C extends Collection<T>> Optional<C> ofEmptyCollection(C value) {
         return CollectionUtils.isEmpty(value) ? Optional.empty() : Optional.of(value);
+    }
+
+    /**
+     * Returns an {@link Optional} describing the given pattern matcher against provided {@link CharSequence}
+     *
+     * @param pattern a compiled representation of a regular expression
+     * @param value   a character sequence to be matched
+     * @return an {@link Optional} with a matcher as value if a subsequence of the input sequence matches the input pattern,
+     * otherwise an empty {@link Optional}
+     * @since 0.0.9
+     */
+    public static Optional<Matcher> ofFind(Pattern pattern, CharSequence value) {
+        return Objects.isNull(value) ? Optional.empty() : ofNullable(pattern)
+                .map(p -> p.matcher(value))
+                .filter(Matcher::find);
     }
 }

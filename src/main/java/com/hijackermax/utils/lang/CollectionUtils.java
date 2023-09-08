@@ -789,4 +789,43 @@ public final class CollectionUtils {
     public static <T> Stream<T> safeStreamOf(Enumeration<T> input) {
         return isEmpty(input) ? Stream.empty() : EnumerationSpliterator.ofOrdered(input).stream();
     }
+
+    /**
+     * Checks if any of input {@link Collection} elements satisfies provided {@link Predicate}
+     *
+     * @param values          collection that should be checked
+     * @param valuesPredicate the predicate that should be applied to source elements collection
+     * @param <T>             collection elements type
+     * @return true if collection contains at least one element that satisfies provided predicate
+     * @since 0.0.9
+     */
+    public static <T> boolean safeAnyMatch(Collection<? extends T> values, Predicate<? super T> valuesPredicate) {
+        return safeStreamOf(values).anyMatch(valuesPredicate);
+    }
+
+    /**
+     * Checks if all of input {@link Collection} elements satisfy provided {@link Predicate}
+     *
+     * @param values          collection that should be checked
+     * @param valuesPredicate the predicate that should be applied to source elements collection
+     * @param <T>             collection elements type
+     * @return true if collection contains all elements that satisfy provided predicate
+     * @since 0.0.9
+     */
+    public static <T> boolean safeAllMatch(Collection<? extends T> values, Predicate<? super T> valuesPredicate) {
+        return isNotEmpty(values) && values.stream().allMatch(valuesPredicate);
+    }
+
+    /**
+     * Checks if none of input {@link Collection} elements satisfy provided {@link Predicate}
+     *
+     * @param values          collection that should be checked
+     * @param valuesPredicate the predicate that should be applied to source elements collection
+     * @param <T>             collection elements type
+     * @return true if collection contains no elements that satisfy provided predicate
+     * @since 0.0.9
+     */
+    public static <T> boolean safeNoneMatch(Collection<? extends T> values, Predicate<? super T> valuesPredicate) {
+        return isEmpty(values) || values.stream().noneMatch(valuesPredicate);
+    }
 }
