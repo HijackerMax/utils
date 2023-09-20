@@ -1,6 +1,7 @@
 package com.hijackermax.utils.lang;
 
 import com.hijackermax.utils.encoders.Base122;
+import com.hijackermax.utils.entities.Single;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ObjectUtilsTest {
     @Test
@@ -57,5 +59,16 @@ class ObjectUtilsTest {
         assertEquals(2, ObjectUtils.valueOrGetDefault(2, () -> 5));
         assertEquals(7, ObjectUtils.valueOrGetDefault(7, () -> null));
         assertNull(ObjectUtils.valueOrGetDefault(null, () -> null));
+    }
+
+    @Test
+    void testIfNotNull() {
+        Single<String> holder = new Single<>("Foo");
+        ObjectUtils.ifNotNull(null, holder::setValue);
+        assertTrue(holder.containsValue());
+        assertEquals("Foo", holder.getValue());
+        ObjectUtils.ifNotNull("Bar", holder::setValue);
+        assertTrue(holder.containsValue());
+        assertEquals("Bar", holder.getValue());
     }
 }

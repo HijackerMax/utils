@@ -1,5 +1,7 @@
 package com.hijackermax.utils.lang;
 
+import com.hijackermax.utils.entities.Triple;
+import com.hijackermax.utils.entities.Tuple;
 import com.hijackermax.utils.misc.EnumerationSpliterator;
 
 import java.util.ArrayList;
@@ -408,7 +410,7 @@ public final class CollectionUtils {
      * or empty immutable list if left collection is null
      * @since 0.0.1
      */
-    public static <I> List<I> subtract(Collection<I> left, Collection<I> right) {
+    public static <I> List<I> subtract(Collection<? extends I> left, Collection<? extends I> right) {
         if (Objects.isNull(left) || Objects.isNull(right)) {
             return Objects.isNull(left) ? Collections.emptyList() : new ArrayList<>(left);
         }
@@ -451,8 +453,8 @@ public final class CollectionUtils {
      * @param <I>                input collection elements type
      * @since 0.0.1
      */
-    public static <I> void getDifferences(Collection<I> left,
-                                          Collection<I> right,
+    public static <I> void getDifferences(Collection<? extends I> left,
+                                          Collection<? extends I> right,
                                           BiConsumer<Collection<I>, Collection<I>> differenceConsumer) {
         differenceConsumer.accept(subtract(left, right), subtract(right, left));
     }
@@ -827,5 +829,58 @@ public final class CollectionUtils {
      */
     public static <T> boolean safeNoneMatch(Collection<? extends T> values, Predicate<? super T> valuesPredicate) {
         return isEmpty(values) || values.stream().noneMatch(valuesPredicate);
+    }
+
+    /**
+     * Passes provided {@link Collection} if it is not empty to the provided {@link Consumer}
+     *
+     * @param values         the collection to check
+     * @param valuesConsumer non-empty collection consumer
+     * @param <T>            input collection value type
+     * @param <C>            input collection type
+     * @since 0.1.0
+     */
+    public static <T, C extends Collection<? extends T>> void ifNotEmpty(C values, Consumer<? super C> valuesConsumer) {
+        if (isNotEmpty(values)) {
+            valuesConsumer.accept(values);
+        }
+    }
+
+    /**
+     * Passes provided {@link Map} if it is not empty to the provided {@link Consumer}
+     *
+     * @param values         the map to check
+     * @param valuesConsumer non-empty map consumer
+     * @param <K>            input map key type
+     * @param <V>            input map value type
+     * @param <M>            input map type
+     * @since 0.1.0
+     */
+    public static <K, V, M extends Map<? extends K, ? extends V>> void ifNotEmpty(M values, Consumer<? super M> valuesConsumer) {
+        if (isNotEmpty(values)) {
+            valuesConsumer.accept(values);
+        }
+    }
+
+    /**
+     * Calculates differences between left input {@link Map} and right input {@link Map}
+     *
+     * @param left  first input map
+     * @param right second input map
+     * @param <K>   input maps key type
+     * @param <V>   input maps value type
+     * @return map containing key - value pairs of differences, key set is union of input maps keys, values are tuples with left and right maps values respectively
+     * @since 0.1.0
+     */
+    public static <K, V> Map<K, Tuple<V, V>> getDifferences(Map<? extends K, ? extends V> left,
+                                                            Map<? extends K, ? extends V> right) {
+        Map<? extends K, ? extends V> leftSafe = Objects.isNull(left) ? Collections.emptyMap() : left;
+        Map<? extends K, ? extends V> rightSafe = Objects.isNull(right) ? Collections.emptyMap() : right;
+        return Stream.of(leftSafe.keySet(), rightSafe.keySet())
+                .flatMap(Collection::stream)
+                .distinct()
+                .map(k -> Triple.of(k, leftSafe.get(k), rightSafe.get(k)))
+                .filter(t -> !Objects.equals(t.getMiddle(), t.getValue()))
+                .collect(Collectors.toMap(Triple::getKey, t -> Tuple.of(t.getMiddle(), t.getValue())));
     }
 }

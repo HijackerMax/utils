@@ -166,7 +166,9 @@ public class Triple<K, M, V> extends Tuple<K, V> {
     @Override
     public String toString() {
         return "Triple{" +
+                "key=" + getKey() +
                 "middle=" + middle +
-                "} " + super.toString();
+                "value=" + getValue() +
+                '}';
     }
 }

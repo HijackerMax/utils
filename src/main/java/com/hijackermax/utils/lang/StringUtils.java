@@ -1,5 +1,6 @@
 package com.hijackermax.utils.lang;
 
+import com.hijackermax.utils.builders.Transformer;
 import com.hijackermax.utils.entities.Single;
 import com.hijackermax.utils.enums.ComparisonOperators;
 
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -16,12 +18,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.hijackermax.utils.lang.CollectionUtils.safeStreamOf;
 import static com.hijackermax.utils.lang.NumberUtils.requireGreaterThanZero;
+import static com.hijackermax.utils.lang.ObjectUtils.valueOrDefault;
+import static java.util.Objects.isNull;
 
 /**
  * Set of utility methods that can help to work with Strings
@@ -73,6 +78,7 @@ public final class StringUtils {
     private static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
     private static final Pattern NON_DIGITS_PATTERN = Pattern.compile("[^\\d.]");
     private static final Pattern DIGITS_PATTERN = Pattern.compile("[^\\D.]");
+    private static final Pattern NAMED_FORMAT_PATTERN = Pattern.compile("(?iu)(?:\\$\\{(?:(\\w+)(?:\\?`([^`]+[\\p{Alnum}\\p{IsAlnum}\\p{Punct}\\p{IsPunct}']+[\\s]?[^`]+)`)?(%\\w+)?)\\})");
 
     private StringUtils() {
     }
@@ -85,7 +91,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static boolean isEmpty(String value) {
-        return Objects.isNull(value) || value.isEmpty();
+        return isNull(value) || value.isEmpty();
     }
 
     /**
@@ -107,7 +113,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static boolean isBlank(String value) {
-        return Objects.isNull(value) || value.isBlank();
+        return isNull(value) || value.isBlank();
     }
 
     /**
@@ -154,7 +160,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static boolean equalsIgnoreCase(String left, String right) {
-        return Objects.nonNull(left) ? left.equalsIgnoreCase(right) : Objects.isNull(right);
+        return Objects.nonNull(left) ? left.equalsIgnoreCase(right) : isNull(right);
     }
 
     /**
@@ -166,7 +172,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static boolean equals(String left, String right) {
-        return Objects.nonNull(left) ? left.equals(right) : Objects.isNull(right);
+        return Objects.nonNull(left) ? left.equals(right) : isNull(right);
     }
 
     /**
@@ -177,7 +183,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static String trim(String source) {
-        return Objects.isNull(source) ? null : source.trim();
+        return isNull(source) ? null : source.trim();
     }
 
     /**
@@ -275,7 +281,7 @@ public final class StringUtils {
     }
 
     private static String pad(String source, int requiredLength, String filler, boolean appendToEnd) {
-        if (Objects.isNull(source) || Objects.isNull(filler)) {
+        if (isNull(source) || isNull(filler)) {
             return null;
         }
         int sourceLength = source.length();
@@ -344,7 +350,7 @@ public final class StringUtils {
     }
 
     /**
-     * Returs provided value {@link String} or default {@link String} if value is null, empty or blank
+     * Returns provided value {@link String} or default {@link String} if value is null, empty or blank
      *
      * @param value        that can be null, blank or empty
      * @param defaultValue fallback value
@@ -367,7 +373,7 @@ public final class StringUtils {
     }
 
     /**
-     * Returs provided value {@link String} or {@link String} provided by default
+     * Returns provided value {@link String} or {@link String} provided by default
      * value {@link Supplier} if value is null, empty or blank
      *
      * @param value                that can be null, blank or empty
@@ -543,7 +549,7 @@ public final class StringUtils {
         if (isBlank(source)) {
             return EMPTY;
         }
-        if (Objects.isNull(delimiters) || 0 == delimiters.length) {
+        if (isNull(delimiters) || 0 == delimiters.length) {
             return source;
         }
 
@@ -616,5 +622,87 @@ public final class StringUtils {
         if (isNotBlank(left) && isNotBlank(right)) {
             valuesConsumer.accept(left, right);
         }
+    }
+
+    /**
+     * Returns provided value {@link String} or default {@link String} if value is null or empty
+     *
+     * @param value        that can be null or empty
+     * @param defaultValue fallback value
+     * @return value if it is not null or empty, otherwise defaultValue
+     * @since 0.1.0
+     */
+    public static String notEmptyOrElse(String value, String defaultValue) {
+        return isEmpty(value) ? defaultValue : value;
+    }
+
+    /**
+     * Conducts named format for provided {@link String} template
+     * <p> An example of syntax:
+     * <p> "Some example text ${keyOne?`onMissing`} more text ${keyTwo%x} even more text ${keyThree} and a bit more ${keyThree?`onMissing`%x}"
+     * <p> Replacement tokens syntax breakdown: ${keyOne?`onMissing`%s}
+     * <ul>
+     *     <li>Each token should be wrapped with ${}</li>
+     *     <li>"keyOne" is an example of key in provided values map</li>
+     *     <li>"?`onMissing`" is an example of default value ("onMissing") if token key is missing in values map or associated with null value. Supports alpha-numerics, spaces, punctuation. Optional part of token, can be omitted, if not provided empty string will be used instead</li>
+     *     <li>If value associated with key not found and default value is not provided token will returned as is</li>
+     *     <li>"%s" is an example of value formatting ("%s"), standard {@link String#format(String, Object...)} format is supported. Optional part of token, can be omitted, if not provided {@link String#valueOf(Object)} will be used instead</li>
+     *  </ul>
+     *
+     * @param template template of resulting string
+     * @param values   {@link Map} of values that should replace tokens in provided template
+     * @return formatted string with provided values map,
+     * or empty string if provided template is empty or null,
+     * or template if it is blank or values map is empty or null
+     * @since 0.1.0
+     */
+    public static String namedFormat(String template, Map<String, Object> values) {
+        if (isEmpty(template)) {
+            return EMPTY;
+        }
+        if (isBlank(template) || CollectionUtils.isEmpty(values)) {
+            return template;
+        }
+        Transformer<String> transformer = Transformer.of(template);
+        NAMED_FORMAT_PATTERN.matcher(template).results().forEach(matchResult -> {
+            String format = matchResult.group(3);
+            Object providedValue = values.get(matchResult.group(1));
+            String group = matchResult.group(0);
+            String replacement = isNull(providedValue) ?
+                    valueOrDefault(matchResult.group(2), group) : isEmpty(format) ?
+                    String.valueOf(providedValue) : String.format(format, providedValue);
+            transformer.run(v -> v.replace(group, replacement));
+        });
+        return transformer.result();
+    }
+
+    /**
+     * Transfers named groups from provided source {@link String} using provided {@link Pattern} to provided string template
+     *
+     * @param sourcePattern pattern with named groups
+     * @param source        source string which parts should be matched and transferred to resulting string
+     * @param template      named template with tokens representing group names, see {@link StringUtils#namedFormat format description can be found here}
+     * @return formatted string with transferred values or empty string if provided pattern is null or the template or source is blank
+     * @see StringUtils#namedFormat
+     * @since 0.1.0
+     */
+    public static String transferValues(Pattern sourcePattern, String source, String template) {
+        if (Objects.isNull(sourcePattern) || isBlank(source) || isBlank(template)) {
+            return EMPTY;
+        }
+        Set<String> keys = NAMED_FORMAT_PATTERN.matcher(template).results()
+                .map(mr -> mr.group(1))
+                .collect(Collectors.toSet());
+        Matcher matcher = sourcePattern.matcher(source);
+        Map<String, Object> values = new HashMap<>();
+        while (matcher.find()) {
+            for (String key : keys) {
+                try {
+                    values.computeIfAbsent(key, matcher::group);
+                } catch (IllegalArgumentException | IllegalStateException ignored) {
+                }
+            }
+        }
+        return namedFormat(template, values);
     }
 }

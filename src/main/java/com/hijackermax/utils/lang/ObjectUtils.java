@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.zip.GZIPInputStream;
@@ -21,7 +22,7 @@ public final class ObjectUtils {
     }
 
     /**
-     * Returs provided value or default if value is null. There is no non-null limitation for defaultValue.
+     * Returns provided value or default if value is null. There is no non-null limitation for defaultValue.
      *
      * @param value        that can be null
      * @param defaultValue fallback value
@@ -115,7 +116,7 @@ public final class ObjectUtils {
     }
 
     /**
-     * Returs provided value or invokes default value {@link Supplier} if value is null
+     * Returns provided value or invokes default value {@link Supplier} if value is null
      *
      * @param value                that can be null
      * @param defaultValueSupplier fallback value {@link Supplier}
@@ -125,5 +126,19 @@ public final class ObjectUtils {
      */
     public static <T> T valueOrGetDefault(T value, Supplier<T> defaultValueSupplier) {
         return Objects.isNull(value) ? defaultValueSupplier.get() : value;
+    }
+
+    /**
+     * Passes provided object if it is not null to the provided {@link Consumer}
+     *
+     * @param value         the value to check
+     * @param valueConsumer non-null value consumer
+     * @param <T>           input value type
+     * @since 0.1.0
+     */
+    public static <T> void ifNotNull(T value, Consumer<T> valueConsumer) {
+        if (Objects.nonNull(value)) {
+            valueConsumer.accept(value);
+        }
     }
 }

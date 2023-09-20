@@ -569,4 +569,79 @@ class CollectionUtilsTest {
         assertTrue(CollectionUtils.safeNoneMatch(List.of(1, 2, 3), v -> v > 5));
         assertTrue(CollectionUtils.safeNoneMatch(List.of(1), v -> v > 5));
     }
+
+    @Test
+    void testIfNotEmptyMap() {
+        Single<Map<Boolean, Boolean>> holder = new Single<>(Map.of(false, true));
+        CollectionUtils.ifNotEmpty((Map<Boolean, Boolean>) null, holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        CollectionUtils.ifNotEmpty(Map.of(), holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        CollectionUtils.ifNotEmpty(Map.of(true, false), holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        assertFalse(holder.getValue().get(true));
+    }
+
+    @Test
+    void testIfNotEmpty() {
+        Single<List<Boolean>> holder = new Single<>(List.of(false));
+        CollectionUtils.ifNotEmpty((List<Boolean>) null, holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        CollectionUtils.ifNotEmpty(List.of(), holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        CollectionUtils.ifNotEmpty(List.of(true), holder::setValue);
+        assertTrue(holder.containsValue());
+        assertFalse(holder.getValue().isEmpty());
+        assertTrue(holder.getValue().contains(true));
+        assertEquals(1, holder.getValue().size());
+    }
+
+    @Test
+    void testGetMapDifferences() {
+        assertTrue(CollectionUtils.getDifferences(null, null).isEmpty());
+        assertTrue(CollectionUtils.getDifferences(Collections.emptyMap(), null).isEmpty());
+        assertTrue(CollectionUtils.getDifferences(null, Collections.emptyMap()).isEmpty());
+        assertTrue(CollectionUtils.getDifferences(Collections.emptyMap(), Collections.emptyMap()).isEmpty());
+        assertEquals(
+                Map.of("Foo", Tuple.of("Bar", "Test")),
+                CollectionUtils.getDifferences(
+                        Map.of("Foo", "Bar"),
+                        Map.of("Foo", "Test")
+                )
+        );
+        assertEquals(
+                Map.of("Foo", Tuple.of("Bar", "Test")),
+                CollectionUtils.getDifferences(
+                        Map.of("Foo", "Bar", "1", "2"),
+                        Map.of("Foo", "Test", "1", "2")
+                )
+        );
+        assertEquals(
+                Map.of("Foo", Tuple.of(null, "Test"), "1", Tuple.of(null, "2")),
+                CollectionUtils.getDifferences(
+                        null,
+                        Map.of("Foo", "Test", "1", "2")
+                )
+        );
+        assertEquals(
+                Map.of("Foo", Tuple.of("Test", null), "1", Tuple.of("2", null)),
+                CollectionUtils.getDifferences(
+                        Map.of("Foo", "Test", "1", "2"),
+                        null
+                )
+        );
+        Map<String, Tuple<String, String>> differences = CollectionUtils.getDifferences(
+                Map.of("Foo", "Bar", "1", "2", "2", "3"),
+                Map.of("Foo", "Test", "1", "2", "3", "4")
+        );
+        assertEquals(3, differences.size());
+        assertEquals(Tuple.of("Bar", "Test"), differences.get("Foo"));
+        assertEquals(Tuple.of("3", null), differences.get("2"));
+        assertEquals(Tuple.of(null, "4"), differences.get("3"));
+    }
 }

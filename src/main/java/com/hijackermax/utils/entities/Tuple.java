@@ -1,5 +1,6 @@
 package com.hijackermax.utils.entities;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -43,6 +44,18 @@ public class Tuple<K, V> extends Single<V> {
     }
 
     /**
+     * Creates instance of {@link Tuple} from provided {@link Map.Entry}
+     *
+     * @param entry that should be converted to tuple
+     * @param <K>   key type
+     * @param <V>   value type
+     * @return instance of {@link Tuple} from provided map entity
+     */
+    public static <K, V> Tuple<K, V> of(Map.Entry<K, V> entry) {
+        return new Tuple<>(entry.getKey(), entry.getValue());
+    }
+
+    /**
      * Creates new instance of {@link Tuple} with null key and value
      */
     public Tuple() {
@@ -55,6 +68,42 @@ public class Tuple<K, V> extends Single<V> {
      */
     public K getKey() {
         return key;
+    }
+
+    /**
+     * Returns left value (key) of this instance of {@link Tuple}
+     *
+     * @return left value (key)
+     */
+    public K getLeft() {
+        return key;
+    }
+
+    /**
+     * Sets left value (key) to this instance of {@link Tuple}
+     *
+     * @param left new left value (key)
+     */
+    public void setLeft(K left) {
+        setKey(left);
+    }
+
+    /**
+     * Returns right value (value) of this instance of {@link Tuple}
+     *
+     * @return right value (value)
+     */
+    public V getRight() {
+        return getValue();
+    }
+
+    /**
+     * Sets right value (value) to this instance of {@link Tuple}
+     *
+     * @param right new right value (value)
+     */
+    public void setRight(V right) {
+        setValue(right);
     }
 
     /**
@@ -94,6 +143,24 @@ public class Tuple<K, V> extends Single<V> {
      */
     public boolean containsKey() {
         return key != null;
+    }
+
+    /**
+     * Compares left value (key) of this instance of {@link Tuple} with null
+     *
+     * @return true if left value (key) is not null, otherwise false
+     */
+    public boolean containsLeft() {
+        return containsKey();
+    }
+
+    /**
+     * Compares right value (value) of this instance of {@link Tuple} with null
+     *
+     * @return true if right value (value) is not null, otherwise false
+     */
+    public boolean containsRight() {
+        return containsValue();
     }
 
     /**
@@ -160,6 +227,7 @@ public class Tuple<K, V> extends Single<V> {
     public String toString() {
         return "Tuple{" +
                 "key=" + key +
-                "} " + super.toString();
+                "value=" + getValue() +
+                '}';
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -414,5 +415,47 @@ class StringUtilsTest {
         StringUtils.ifBothNotBlank("Foo", "Bar", valueHolder::setPair);
         assertEquals("Foo", valueHolder.getKey());
         assertEquals("Bar", valueHolder.getValue());
+    }
+
+    @Test
+    void testNotEmptyOrElse() {
+        assertEquals("Hello", StringUtils.notEmptyOrElse("Hello", "Foo"));
+        assertEquals("Hello", StringUtils.notEmptyOrElse("Hello", null));
+        assertEquals("Foo", StringUtils.notEmptyOrElse(null, "Foo"));
+        assertEquals("Foo", StringUtils.notEmptyOrElse("", "Foo"));
+        assertEquals("  ", StringUtils.notEmptyOrElse("  ", "Foo"));
+    }
+
+    @Test
+    void testNamedFormat() {
+        assertEquals(StringUtils.EMPTY, StringUtils.namedFormat(null, null));
+        assertEquals("Test", StringUtils.namedFormat("Test", null));
+        assertEquals(StringUtils.EMPTY, StringUtils.namedFormat(null, Map.of()));
+        assertEquals("Test", StringUtils.namedFormat("Test", Map.of()));
+        assertEquals(StringUtils.BLANK, StringUtils.namedFormat(StringUtils.BLANK, Map.of("Test", "Test")));
+
+        String template = "Foo ${text_default?`bar`}: ${numeric%x} = ${numeric} ${numeric_default?`128`%x} % ${text}";
+        Map<String, Object> values = Map.of(
+                "numeric", 255,
+                "text", "Test"
+        );
+        assertEquals("Foo bar: ff = 255 128 % Test", StringUtils.namedFormat(template, values));
+
+        String spacesInDefault = "Foo ${text_default?`<? bar ?>`}: ${numeric%x} = ${numeric} ${numeric_default?`@[  128]$^`%x} % ${text} ${missing}";
+        Map<String, Object> values2 = Map.of(
+                "numeric", 255,
+                "text", "Test"
+        );
+        assertEquals("Foo <? bar ?>: ff = 255 @[  128]$^ % Test ${missing}", StringUtils.namedFormat(spacesInDefault, values2));
+    }
+
+    @Test
+    void testTransferValues() {
+        Pattern pattern = Pattern.compile("(?iu)(?:(\\$\\{(?<value1>\\w+)?\\})|(#\\{(?<value2>\\w+)?\\})|(%\\{(?<value3>\\w+)?\\}))");
+        assertEquals(StringUtils.EMPTY, StringUtils.transferValues(null, null, null));
+        assertEquals(StringUtils.EMPTY, StringUtils.transferValues(pattern, StringUtils.BLANK, StringUtils.BLANK));
+        assertEquals("Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
+        assertEquals("Foo value_one bar value_two default", StringUtils.transferValues(pattern, "Foo ${value_one} #{value_two}", "Foo ${value1} bar ${value2} ${value4?`default`}"));
+        assertEquals("Foo value_one bar ${value2} value_three Test Test", StringUtils.transferValues(pattern, "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
     }
 }
