@@ -16,7 +16,7 @@ public final class FunctionalUtils {
     }
 
     /**
-     * Provides wrapper {@link Consumer} which cathes {@link Exception} thrown by the input value {@link Consumer}
+     * Provides wrapper {@link Consumer} which catches {@link Exception} thrown by the input value {@link Consumer}
      * and supplies it to provided exception{@link BiConsumer}
      *
      * @param consumer          value {@link Consumer} that can throw {@link Exception}
@@ -36,7 +36,7 @@ public final class FunctionalUtils {
     }
 
     /**
-     * Cathes {@link Exception} thrown by provided {@link Runnable} and supplies it to provided exception{@link Consumer}
+     * Catches {@link Exception} thrown by provided {@link Runnable} and supplies it to provided exception{@link Consumer}
      *
      * @param runnable          {@link Runnable} that can throw {@link Exception}
      * @param exceptionConsumer thrown {@link Exception} {@link Consumer}
@@ -52,7 +52,7 @@ public final class FunctionalUtils {
     }
 
     /**
-     * Provides wrapper {@link Callable} which cathes {@link Exception} thrown by the provided {@link Callable}
+     * Provides wrapper {@link Callable} which catches {@link Exception} thrown by the provided {@link Callable}
      * and supplies it to provided exception{@link Consumer},
      * in case of failure return invoke result of fallback {@link Supplier}
      *

@@ -441,12 +441,12 @@ class StringUtilsTest {
         );
         assertEquals("Foo bar: ff = 255 128 % Test", StringUtils.namedFormat(template, values));
 
-        String spacesInDefault = "Foo ${text_default?`<? bar ?>`}: ${numeric%x} = ${numeric} ${numeric_default?`@[  128]$^`%x} % ${text} ${missing}";
+        String spacesInDefault = "Foo ${text_default?`<? \\b-a-r/ ?>`}: ${numeric%x} = ${numeric} ${numeric_default?`@[  128]$^`%x} % ${text} ${missing}";
         Map<String, Object> values2 = Map.of(
                 "numeric", 255,
                 "text", "Test"
         );
-        assertEquals("Foo <? bar ?>: ff = 255 @[  128]$^ % Test ${missing}", StringUtils.namedFormat(spacesInDefault, values2));
+        assertEquals("Foo <? \\b-a-r/ ?>: ff = 255 @[  128]$^ % Test ${missing}", StringUtils.namedFormat(spacesInDefault, values2));
     }
 
     @Test
@@ -454,7 +454,9 @@ class StringUtilsTest {
         Pattern pattern = Pattern.compile("(?iu)(?:(\\$\\{(?<value1>\\w+)?\\})|(#\\{(?<value2>\\w+)?\\})|(%\\{(?<value3>\\w+)?\\}))");
         assertEquals(StringUtils.EMPTY, StringUtils.transferValues(null, null, null));
         assertEquals(StringUtils.EMPTY, StringUtils.transferValues(pattern, StringUtils.BLANK, StringUtils.BLANK));
-        assertEquals("Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
+        assertEquals("Foo ${value1} bar ${value2} ${value3} Test Test", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
+        assertEquals("Foo ${value1} bar ${value2} ${value3} -", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`-`}"));
+        assertEquals("Foo  bar ${value2} ${value3} -", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1?``} bar ${value2} ${value3} ${value4?`-`}"));
         assertEquals("Foo value_one bar value_two default", StringUtils.transferValues(pattern, "Foo ${value_one} #{value_two}", "Foo ${value1} bar ${value2} ${value4?`default`}"));
         assertEquals("Foo value_one bar ${value2} value_three Test Test", StringUtils.transferValues(pattern, "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
     }

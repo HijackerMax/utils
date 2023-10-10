@@ -78,7 +78,7 @@ public final class StringUtils {
     private static final Pattern WHITESPACES_PATTERN = Pattern.compile("\\s+");
     private static final Pattern NON_DIGITS_PATTERN = Pattern.compile("[^\\d.]");
     private static final Pattern DIGITS_PATTERN = Pattern.compile("[^\\D.]");
-    private static final Pattern NAMED_FORMAT_PATTERN = Pattern.compile("(?iu)(?:\\$\\{(?:(\\w+)(?:\\?`([^`]+[\\p{Alnum}\\p{IsAlnum}\\p{Punct}\\p{IsPunct}']+[\\s]?[^`]+)`)?(%\\w+)?)\\})");
+    private static final Pattern NAMED_FORMAT_PATTERN = Pattern.compile("(?iu)(?:\\$\\{(?:(\\w+)(?:\\?`([^``]*|-|[^`]+[\\p{Alnum}\\p{IsAlnum}\\p{Punct}\\p{IsPunct}']+[\\s]?[^`]+)`)?(%\\w+)?)\\})");
 
     private StringUtils() {
     }
@@ -653,14 +653,14 @@ public final class StringUtils {
      * @param values   {@link Map} of values that should replace tokens in provided template
      * @return formatted string with provided values map,
      * or empty string if provided template is empty or null,
-     * or template if it is blank or values map is empty or null
+     * or template if it is blank or values map is null
      * @since 0.1.0
      */
     public static String namedFormat(String template, Map<String, Object> values) {
         if (isEmpty(template)) {
             return EMPTY;
         }
-        if (isBlank(template) || CollectionUtils.isEmpty(values)) {
+        if (isBlank(template) || Objects.isNull(values)) {
             return template;
         }
         Transformer<String> transformer = Transformer.of(template);
