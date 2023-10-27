@@ -333,26 +333,26 @@ class StringUtilsTest {
     @Test
     void testIfNotEmpty() {
         Single<String> valueHolder = new Single<>("Original");
-        StringUtils.ifNotEmpty(null, valueHolder::setValue);
+        StringUtils.ifNotEmpty(null, valueHolder);
         assertEquals("Original", valueHolder.getValue());
-        StringUtils.ifNotEmpty(StringUtils.EMPTY, valueHolder::setValue);
+        StringUtils.ifNotEmpty(StringUtils.EMPTY, valueHolder);
         assertEquals("Original", valueHolder.getValue());
-        StringUtils.ifNotEmpty(StringUtils.BLANK, valueHolder::setValue);
+        StringUtils.ifNotEmpty(StringUtils.BLANK, valueHolder);
         assertEquals(StringUtils.BLANK, valueHolder.getValue());
-        StringUtils.ifNotEmpty("Foo", valueHolder::setValue);
+        StringUtils.ifNotEmpty("Foo", valueHolder);
         assertEquals("Foo", valueHolder.getValue());
     }
 
     @Test
     void testIfNotBlank() {
         Single<String> valueHolder = new Single<>("Original");
-        StringUtils.ifNotBlank(null, valueHolder::setValue);
+        StringUtils.ifNotBlank(null, valueHolder);
         assertEquals("Original", valueHolder.getValue());
-        StringUtils.ifNotBlank(StringUtils.EMPTY, valueHolder::setValue);
+        StringUtils.ifNotBlank(StringUtils.EMPTY, valueHolder);
         assertEquals("Original", valueHolder.getValue());
-        StringUtils.ifNotBlank(StringUtils.BLANK, valueHolder::setValue);
+        StringUtils.ifNotBlank(StringUtils.BLANK, valueHolder);
         assertEquals("Original", valueHolder.getValue());
-        StringUtils.ifNotBlank("Foo", valueHolder::setValue);
+        StringUtils.ifNotBlank("Foo", valueHolder);
         assertEquals("Foo", valueHolder.getValue());
     }
 
@@ -459,5 +459,56 @@ class StringUtilsTest {
         assertEquals("Foo  bar ${value2} ${value3} -", StringUtils.transferValues(Pattern.compile(""), "Foo ${value_one} %{value_three}", "Foo ${value1?``} bar ${value2} ${value3} ${value4?`-`}"));
         assertEquals("Foo value_one bar value_two default", StringUtils.transferValues(pattern, "Foo ${value_one} #{value_two}", "Foo ${value1} bar ${value2} ${value4?`default`}"));
         assertEquals("Foo value_one bar ${value2} value_three Test Test", StringUtils.transferValues(pattern, "Foo ${value_one} %{value_three}", "Foo ${value1} bar ${value2} ${value3} ${value4?`Test Test`}"));
+    }
+
+    @Test
+    void testIsEmptyCharSequence() {
+        assertTrue(StringUtils.isEmpty((StringBuilder) null));
+        assertTrue(StringUtils.isEmpty(new StringBuilder()));
+        assertFalse(StringUtils.isEmpty(new StringBuilder("Test")));
+        assertFalse(StringUtils.isEmpty(new StringBuilder(" ")));
+    }
+
+    @Test
+    void testIsNotEmptyCharSequence() {
+        assertFalse(StringUtils.isNotEmpty((StringBuilder) null));
+        assertFalse(StringUtils.isNotEmpty(new StringBuilder()));
+        assertTrue(StringUtils.isNotEmpty(new StringBuilder("Test")));
+        assertTrue(StringUtils.isNotEmpty(new StringBuilder(" ")));
+    }
+
+    @Test
+    void testJoinCharSequenceFunction() {
+        List<CharSequence> sourceList = List.of("Foo", "Bar", "Test");
+        assertEquals(StringUtils.EMPTY, StringUtils.join(", ").apply(null));
+        assertEquals(StringUtils.EMPTY, StringUtils.join(", ").apply(Collections.emptyList()));
+        assertEquals(
+                "Foo, Bar, Test",
+                StringUtils.join(", ").apply(sourceList)
+        );
+        assertEquals(
+                "Foo$Bar$Test",
+                StringUtils.join("$").apply(sourceList)
+        );
+    }
+
+    @Test
+    void testJoinCharSequenceGroup() {
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(null, ",", ";", 1));
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(List.of(), ",", ";", 1));
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(List.of("Test", "Foo"), ",", ";", 0));
+        List<String> strings = List.of("$", "1", "2", "3", "4", "5", "6", "7", "8", "9", "");
+        assertEquals("$, 1, 2, 3, 4@5, 6, 7, 8, 9", StringUtils.joinGroup(strings, ", ", "@", 5));
+        assertEquals("$, 1@2, 3@4, 5@6, 7@8, 9", StringUtils.joinGroup(strings, ", ", "@", 2));
+    }
+
+    @Test
+    void testJoinMappedGroup() {
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(null, String::valueOf, ",", ";", 1));
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(List.of(), String::valueOf, ",", ";", 1));
+        assertEquals(StringUtils.EMPTY, StringUtils.joinGroup(List.of(1, 2), String::valueOf, ",", ";", 0));
+        List<Integer> integers = List.of(0, 2, 3, 4, 5, 6, 7, 8, 9, 12);
+        assertEquals("0, 2, 3, 4, 5@6, 7, 8, 9, 12", StringUtils.joinGroup(integers, String::valueOf, ", ", "@", 5));
+        assertEquals("0, 2@3, 4@5, 6@7, 8@9, 12", StringUtils.joinGroup(integers, String::valueOf, ", ", "@", 2));
     }
 }

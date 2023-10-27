@@ -644,4 +644,37 @@ class CollectionUtilsTest {
         assertEquals(Tuple.of("3", null), differences.get("2"));
         assertEquals(Tuple.of(null, "4"), differences.get("3"));
     }
+
+    @Test
+    void testPartition() {
+        assertEquals(Collections.emptyList(), CollectionUtils.partition(null, 10));
+        assertEquals(Collections.emptyList(), CollectionUtils.partition(Collections.emptyList(), 10));
+
+        List<Integer> sevenElements = List.of(1, 2, 3, 4, 5, 6, 7);
+        assertEquals(Collections.emptyList(), CollectionUtils.partition(sevenElements, 0));
+        List<List<Integer>> partition4 = CollectionUtils.partition(sevenElements, 2);
+        assertEquals(4, partition4.size());
+        assertEquals(List.of(1, 2), partition4.get(0));
+        assertEquals(List.of(3, 4), partition4.get(1));
+        assertEquals(List.of(5, 6), partition4.get(2));
+        assertEquals(List.of(7), partition4.get(3));
+
+        List<List<Integer>> partition3 = CollectionUtils.partition(sevenElements, 3);
+        assertEquals(3, partition3.size());
+        assertEquals(List.of(1, 2, 3), partition3.get(0));
+        assertEquals(List.of(4, 5, 6), partition3.get(1));
+        assertEquals(List.of(7), partition3.get(2));
+
+        List<Integer> eightElements = List.of(1, 2, 3, 0, 5, 6, 7, 9);
+        List<List<Integer>> partition2 = CollectionUtils.partition(eightElements, 4);
+        assertEquals(2, partition2.size());
+        assertEquals(List.of(1, 2, 3, 0), partition2.get(0));
+        assertEquals(List.of(5, 6, 7, 9), partition2.get(1));
+
+        List<Integer> twoElement = List.of(1, 2);
+        List<List<Integer>> partition1 = CollectionUtils.partition(twoElement, 1);
+        assertEquals(2, partition1.size());
+        assertEquals(List.of(1), partition1.get(0));
+        assertEquals(List.of(2), partition1.get(1));
+    }
 }

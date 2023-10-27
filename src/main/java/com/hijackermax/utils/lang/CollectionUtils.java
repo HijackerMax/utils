@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -882,5 +883,24 @@ public final class CollectionUtils {
                 .map(k -> Triple.of(k, leftSafe.get(k), rightSafe.get(k)))
                 .filter(t -> !Objects.equals(t.getMiddle(), t.getValue()))
                 .collect(Collectors.toMap(Triple::getKey, t -> Tuple.of(t.getMiddle(), t.getValue())));
+    }
+
+    /**
+     * Splits provided {@link List} to partitions of provided size, doesn't modify source list
+     *
+     * @param values        values to partition
+     * @param partitionSize required size of partition
+     * @param <I>           input type
+     * @return {@link List} of partitions of predefines size, empty list if source list is empty, null or partition siz is less than 1
+     * @since 0.1.3
+     */
+    public static <I> List<List<I>> partition(List<I> values, int partitionSize) {
+        if (isEmpty(values) || 1 > partitionSize) {
+            return Collections.emptyList();
+        }
+        return IntStream.range(0, values.size())
+                .filter(idx -> 0 == idx % partitionSize)
+                .mapToObj(idx -> values.subList(idx, Math.min(idx + partitionSize, values.size())))
+                .collect(Collectors.toList());
     }
 }

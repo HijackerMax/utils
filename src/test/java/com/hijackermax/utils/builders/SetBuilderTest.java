@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,7 +70,7 @@ class SetBuilderTest {
                 .add("Bar")
                 .build();
         assertFalse(CollectionUtils.isEmpty(set));
-        assertTrue(set instanceof TreeSet);
+        assertInstanceOf(TreeSet.class, set);
     }
 
     @Test
@@ -79,7 +80,7 @@ class SetBuilderTest {
                 .add("Bar")
                 .build();
         assertFalse(CollectionUtils.isEmpty(set));
-        assertTrue(set instanceof HashSet);
+        assertInstanceOf(HashSet.class, set);
     }
 
     @Test

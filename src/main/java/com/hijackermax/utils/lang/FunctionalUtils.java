@@ -1,5 +1,7 @@
 package com.hijackermax.utils.lang;
 
+import com.hijackermax.utils.entities.Tuple;
+
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
@@ -34,6 +36,28 @@ public final class FunctionalUtils {
             }
         };
     }
+
+    /**
+     * Provides wrapper {@link BiConsumer} which catches {@link Exception} thrown by the input value {@link BiConsumer}
+     * and supplies it to provided exception{@link BiConsumer}
+     *
+     * @param consumer          values {@link BiConsumer} that can throw {@link Exception}
+     * @param exceptionConsumer input values tuple and thrown {@link Exception} {@link BiConsumer}
+     * @param <L>               left input value type
+     * @param <R>               right input value type
+     * @return wrapper {@link BiConsumer}
+     * @since 0.1.3
+     */
+    public static <L, R> BiConsumer<L, R> failSafeStrategy(BiConsumer<L, R> consumer, BiConsumer<Tuple<L, R>, Exception> exceptionConsumer) {
+        return (left, right) -> {
+            try {
+                consumer.accept(left, right);
+            } catch (Exception e) {
+                exceptionConsumer.accept(Tuple.of(left, right), e);
+            }
+        };
+    }
+
 
     /**
      * Catches {@link Exception} thrown by provided {@link Runnable} and supplies it to provided exception{@link Consumer}
@@ -91,14 +115,63 @@ public final class FunctionalUtils {
     }
 
     /**
-     * Provides empty value {@link Consumer}
+     * Provides empty {@link Consumer}
      *
      * @param <T> supplied value type
-     * @return empty value consumer
+     * @return empty consumer
      * @since 0.0.9
      */
     public static <T> Consumer<T> emptyConsumer() {
-        return v -> {
+        return t -> {
+        };
+    }
+
+    /**
+     * Provides empty {@link Runnable}
+     *
+     * @return empty runnable
+     * @since 0.1.3
+     */
+    public static Runnable emptyRunnable() {
+        return () -> {
+        };
+    }
+
+    /**
+     * Provides empty {@link BiConsumer}
+     *
+     * @param <L> left supplied value type
+     * @param <R> right supplied value type
+     * @return empty consumer
+     * @since 0.1.3
+     */
+    public static <L, R> BiConsumer<L, R> emptyBiConsumer() {
+        return (l, r) -> {
+        };
+    }
+
+    /**
+     * Provides wrapper {@link Function} which catches {@link Exception} thrown by the input value {@link Function}
+     * and supplies it to provided exception{@link BiConsumer}
+     *
+     * @param function          {@link Function} that can throw {@link Exception}
+     * @param fallback          value {@link Supplier} in case of failure of {@link Function}
+     * @param exceptionConsumer input value and thrown {@link Exception} {@link BiConsumer}
+     * @param <T>               input value type
+     * @param <R>               result value type
+     * @return wrapper {@link Function}
+     * @since 0.1.3
+     */
+    public static <T, R> Function<T, R> failSafeStrategy(Function<T, R> function,
+                                                         Supplier<R> fallback,
+                                                         BiConsumer<T, Exception> exceptionConsumer) {
+        return value -> {
+            try {
+                return function.apply(value);
+            } catch (Exception e) {
+                exceptionConsumer.accept(value, e);
+            }
+            return fallback.get();
         };
     }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,7 +71,7 @@ class ListBuilderTest {
                 .add("Bar")
                 .build();
         assertFalse(CollectionUtils.isEmpty(list));
-        assertTrue(list instanceof LinkedList);
+        assertInstanceOf(LinkedList.class, list);
     }
 
     @Test
@@ -80,7 +81,7 @@ class ListBuilderTest {
                 .add("Bar")
                 .build();
         assertFalse(CollectionUtils.isEmpty(list));
-        assertTrue(list instanceof ArrayList);
+        assertInstanceOf(ArrayList.class, list);
     }
 
     @Test
@@ -89,7 +90,7 @@ class ListBuilderTest {
         ListBuilder.<String>of()
                 .add("Foo")
                 .add("Bar")
-                .provideUnmodifiable(wrapper::setValue);
+                .provideUnmodifiable(wrapper);
         assertTrue(wrapper.containsValue());
         List<String> unmodifiableList = wrapper.getValue();
         assertFalse(CollectionUtils.isEmpty(unmodifiableList));

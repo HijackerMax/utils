@@ -13,7 +13,7 @@ public class WSG84Coordinates {
      * Creates new instance of WSG84Coordinates with provided longitude and latitude
      *
      * @param longitude of point
-     * @param latitude of point
+     * @param latitude  of point
      */
     public WSG84Coordinates(double longitude, double latitude) {
         this.longitude = longitude;

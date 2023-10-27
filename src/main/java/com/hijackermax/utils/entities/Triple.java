@@ -17,7 +17,7 @@ import static java.util.Optional.ofNullable;
  * @param <V> value type
  * @since 0.0.3
  */
-public class Triple<K, M, V> extends Tuple<K, V> {
+public class Triple<K, M, V> extends Tuple<K, V> implements TriConsumer<K, M, V> {
     private M middle;
 
     /**
@@ -33,6 +33,12 @@ public class Triple<K, M, V> extends Tuple<K, V> {
     }
 
     /**
+     * Creates new instance of {@link Triple} with null key, middle and value
+     */
+    public Triple() {
+    }
+
+    /**
      * Creates instance of {@link Triple} with provided key, middle and value
      *
      * @param key    that should be wrapped
@@ -45,12 +51,6 @@ public class Triple<K, M, V> extends Tuple<K, V> {
      */
     public static <K, M, V> Triple<K, M, V> of(K key, M middle, V value) {
         return new Triple<>(key, middle, value);
-    }
-
-    /**
-     * Creates new instance of {@link Triple} with null key, middle and value
-     */
-    public Triple() {
     }
 
     /**
@@ -170,5 +170,17 @@ public class Triple<K, M, V> extends Tuple<K, V> {
                 "middle=" + middle +
                 "value=" + getValue() +
                 '}';
+    }
+
+    /**
+     * Accepts and stores provided key, middle and value inside this instance of {@link Triple}
+     *
+     * @param key    new key
+     * @param middle new middle
+     * @param value  new value
+     */
+    @Override
+    public void accept(K key, M middle, V value) {
+        setThree(key, middle, value);
     }
 }

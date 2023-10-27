@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -84,7 +85,7 @@ class CollectorUtilsTest {
         );
         Map<Colors, String> colorsStringMap = uniqueColors.stream()
                 .collect(CollectorUtils.toEnumMap(Tuple::getKey, Tuple::getValue, Colors.class));
-        assertTrue(colorsStringMap instanceof EnumMap);
+        assertInstanceOf(EnumMap.class, colorsStringMap);
         assertEquals(3, colorsStringMap.size());
         assertEquals("00FF00", colorsStringMap.get(Colors.GREEN));
         assertEquals("FF0000", colorsStringMap.get(Colors.RED));
@@ -107,7 +108,7 @@ class CollectorUtilsTest {
         Map<Colors, String> colorsStringMap = colorsWithDuplicates.stream()
                 .sorted(Comparator.comparing(Tuple::getValue))
                 .collect(CollectorUtils.toEnumMap(Tuple::getKey, Tuple::getValue, (l, r) -> r, Colors.class));
-        assertTrue(colorsStringMap instanceof EnumMap);
+        assertInstanceOf(EnumMap.class, colorsStringMap);
         assertEquals(3, colorsStringMap.size());
         assertEquals("00FF00", colorsStringMap.get(Colors.GREEN));
         assertEquals("FF0000", colorsStringMap.get(Colors.RED));

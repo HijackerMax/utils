@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -95,6 +96,17 @@ public final class StringUtils {
     }
 
     /**
+     * Checks if {@link CharSequence} is empty or null
+     *
+     * @param value {@link CharSequence} to check
+     * @return true if {@link CharSequence} is empty or null, otherwise false
+     * @since 0.1.3
+     */
+    public static boolean isEmpty(CharSequence value) {
+        return isNull(value) || 0 == value.length();
+    }
+
+    /**
      * Checks if {@link String} is not empty or null
      *
      * @param value {@link String} to check
@@ -102,6 +114,17 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static boolean isNotEmpty(String value) {
+        return !isEmpty(value);
+    }
+
+    /**
+     * Checks if {@link CharSequence} is not empty or null
+     *
+     * @param value {@link CharSequence} to check
+     * @return true if {@link CharSequence} is not empty or null, otherwise false
+     * @since 0.1.3
+     */
+    public static boolean isNotEmpty(CharSequence value) {
         return !isEmpty(value);
     }
 
@@ -190,14 +213,15 @@ public final class StringUtils {
      * Returns {@link Function} that accepts {@link Collection} and returns a {@link String}
      * built from non-null collection values, separated by provided delimiter
      *
-     * @param delimiter         {@link String} which should separate values in resulting {@link String}
-     * @param toStringConverter {@link Function} which converts {@link Collection} to {@link String}
+     * @param delimiter         {@link CharSequence} which should separate values in resulting {@link String}
+     * @param toStringConverter {@link Function} which converts {@link Collection} values to {@link String}
      * @param <T>               {@link Collection} elements type
      * @return {@link String} built from on-null collection values,
      * separated by provided delimiter, or empty {@link String} if collection is empty or null
      * @since 0.0.1
      */
-    public static <T> Function<Collection<T>, String> join(String delimiter, Function<T, String> toStringConverter) {
+    public static <T> Function<Collection<? extends T>, String> join(CharSequence delimiter,
+                                                                     Function<? super T, String> toStringConverter) {
         return collection -> join(collection, delimiter, toStringConverter);
 
     }
@@ -206,7 +230,7 @@ public final class StringUtils {
      * Returns a {@link String} built from non-null {@link Collection} values, separated by provided delimiter
      *
      * @param collection        {@link Collection} of elements that should be joined
-     * @param delimiter         {@link String} which should separate values in resulting {@link String}
+     * @param delimiter         {@link CharSequence} which should separate values in resulting {@link String}
      * @param toStringConverter {@link Function} which converts {@link Collection} to {@link String}
      * @param <T>               {@link Collection} elements type
      * @return {@link String} built from on-null collection values,
@@ -214,7 +238,7 @@ public final class StringUtils {
      * @since 0.0.1
      */
     public static <T> String join(Collection<? extends T> collection,
-                                  String delimiter,
+                                  CharSequence delimiter,
                                   Function<? super T, String> toStringConverter) {
         return safeStreamOf(collection)
                 .filter(Objects::nonNull)
@@ -704,5 +728,71 @@ public final class StringUtils {
             }
         }
         return namedFormat(template, values);
+    }
+
+    /**
+     * Returns {@link Function} that accepts {@link Collection} of {@link CharSequence} and returns a {@link String}
+     * built from non-null collection values, separated by provided delimiter
+     *
+     * @param delimiter {@link CharSequence} which should separate values in resulting {@link String}
+     * @return {@link Function} that builds {@link String} built from source collection non-null values,
+     * separated by provided delimiter, or empty {@link String} if collection is empty or null
+     * @since 0.1.3
+     */
+    public static Function<Collection<? extends CharSequence>, String> join(CharSequence delimiter) {
+        return collection -> safeStreamOf(collection)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.joining(delimiter));
+    }
+
+    /**
+     * Joins provided {@link Collection} of {@link String} in groups with provided delimiters and group size
+     *
+     * @param values           {@link Collection} of {@link String} to group and join
+     * @param inGroupDelimiter delimiter of values inside the group
+     * @param groupDelimiter   delimiter of groups
+     * @param groupSize        size of resulting groups
+     * @return {@link String} built from source collection non-empty values, grouped and
+     * separated by provided delimiters, or empty {@link String} if collection is empty, null, or group size is 0 or less
+     * @since 0.1.3
+     */
+    public static String joinGroup(Collection<String> values,
+                                   CharSequence inGroupDelimiter,
+                                   CharSequence groupDelimiter,
+                                   int groupSize) {
+        List<String> valuesList = safeStreamOf(values)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toList());
+        List<List<String>> partitions = CollectionUtils.partition(valuesList, groupSize);
+        return partitions.stream()
+                .map(join(inGroupDelimiter))
+                .collect(Collectors.joining(groupDelimiter));
+    }
+
+    /**
+     * Joins provided {@link Collection} in groups with provided delimiters and group size
+     *
+     * @param values            {@link Collection} to group and join
+     * @param toStringConverter {@link Function} which converts {@link Collection} values to {@link String}
+     * @param inGroupDelimiter  delimiter of values inside the group
+     * @param groupDelimiter    delimiter of groups
+     * @param groupSize         size of resulting groups
+     * @param <T>               {@link Collection} elements type
+     * @return {@link String} built from source collection non-null values, mapped by provided mapper, grouped and
+     * separated by provided delimiters, or empty {@link String} if collection is empty, null, or group size is 0 or less
+     * @since 0.1.3
+     */
+    public static <T> String joinGroup(Collection<T> values,
+                                       Function<T, String> toStringConverter,
+                                       CharSequence inGroupDelimiter,
+                                       CharSequence groupDelimiter,
+                                       int groupSize) {
+        List<T> valuesList = safeStreamOf(values)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        List<List<T>> partitions = CollectionUtils.partition(valuesList, groupSize);
+        return partitions.stream()
+                .map(v -> join(inGroupDelimiter, toStringConverter).apply(v))
+                .collect(Collectors.joining(groupDelimiter));
     }
 }

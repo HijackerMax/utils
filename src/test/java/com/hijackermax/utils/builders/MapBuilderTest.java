@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -97,7 +98,7 @@ class MapBuilderTest {
         assertEquals(map.get("One"), 1);
         assertEquals(map.get("Two"), 2);
         assertEquals(map.get("Three"), 3);
-        assertTrue(map instanceof TreeMap);
+        assertInstanceOf(TreeMap.class, map);
     }
 
     @Test
@@ -112,7 +113,7 @@ class MapBuilderTest {
         assertEquals(map.get(Colors.RED), "FF0000");
         assertEquals(map.get(Colors.GREEN), "00FF00");
         assertEquals(map.get(Colors.BLUE), "0000FF");
-        assertTrue(map instanceof EnumMap);
+        assertInstanceOf(EnumMap.class, map);
     }
 
     @Test
@@ -127,7 +128,7 @@ class MapBuilderTest {
         assertEquals(map.get("One"), 1);
         assertEquals(map.get("Two"), 2);
         assertEquals(map.get("Three"), 3);
-        assertTrue(map instanceof HashMap);
+        assertInstanceOf(HashMap.class, map);
     }
 
     @Test

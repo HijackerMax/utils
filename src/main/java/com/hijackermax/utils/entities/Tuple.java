@@ -16,7 +16,7 @@ import static java.util.Optional.ofNullable;
  * @param <V> value type
  * @since 0.0.1
  */
-public class Tuple<K, V> extends Single<V> {
+public class Tuple<K, V> extends Single<V> implements BiConsumer<K, V> {
     private K key;
 
     /**
@@ -28,6 +28,12 @@ public class Tuple<K, V> extends Single<V> {
     public Tuple(K key, V value) {
         super(value);
         this.key = key;
+    }
+
+    /**
+     * Creates new instance of {@link Tuple} with null key and value
+     */
+    public Tuple() {
     }
 
     /**
@@ -56,18 +62,21 @@ public class Tuple<K, V> extends Single<V> {
     }
 
     /**
-     * Creates new instance of {@link Tuple} with null key and value
-     */
-    public Tuple() {
-    }
-
-    /**
      * Returns key of this instance of {@link Tuple}
      *
      * @return key
      */
     public K getKey() {
         return key;
+    }
+
+    /**
+     * Sets key to this instance of {@link Tuple}
+     *
+     * @param key new key
+     */
+    public void setKey(K key) {
+        this.key = key;
     }
 
     /**
@@ -104,15 +113,6 @@ public class Tuple<K, V> extends Single<V> {
      */
     public void setRight(V right) {
         setValue(right);
-    }
-
-    /**
-     * Sets key to this instance of {@link Tuple}
-     *
-     * @param key new key
-     */
-    public void setKey(K key) {
-        this.key = key;
     }
 
     /**
@@ -229,5 +229,16 @@ public class Tuple<K, V> extends Single<V> {
                 "key=" + key +
                 "value=" + getValue() +
                 '}';
+    }
+
+    /**
+     * Accepts and stores provided key and value inside this instance of {@link Tuple}
+     *
+     * @param key   new key
+     * @param value new value
+     */
+    @Override
+    public void accept(K key, V value) {
+        setPair(key, value);
     }
 }

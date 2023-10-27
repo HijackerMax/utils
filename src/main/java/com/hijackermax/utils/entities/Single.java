@@ -3,6 +3,7 @@ package com.hijackermax.utils.entities;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import static java.util.Optional.ofNullable;
@@ -13,7 +14,7 @@ import static java.util.Optional.ofNullable;
  * @param <V> value type
  * @since 0.0.1
  */
-public class Single<V> {
+public class Single<V> implements Consumer<V>, Supplier<V> {
     private V value;
 
     /**
@@ -121,5 +122,25 @@ public class Single<V> {
         return "Single{" +
                 "value=" + value +
                 '}';
+    }
+
+    /**
+     * Accepts and stores provided value inside this instance of {@link Single}
+     *
+     * @param value new value
+     */
+    @Override
+    public void accept(V value) {
+        setValue(value);
+    }
+
+    /**
+     * Returns stored value
+     *
+     * @return stored value
+     */
+    @Override
+    public V get() {
+        return value;
     }
 }

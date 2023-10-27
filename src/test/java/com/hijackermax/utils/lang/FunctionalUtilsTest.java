@@ -6,19 +6,22 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FunctionalUtilsTest {
     @Test
     void testFailSafeStrategyRunnable() {
-        var testValue = "FooBar";
+        String testValue = "FooBar";
         Runnable throwingRunnable = () -> {
             throw new NullPointerException(testValue);
         };
@@ -28,7 +31,7 @@ class FunctionalUtilsTest {
         assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(throwingRunnable, exceptionHolder::setValue));
         assertTrue(exceptionHolder.containsValue());
         Exception exception = exceptionHolder.getValue();
-        assertTrue(exception instanceof NullPointerException);
+        assertInstanceOf(NullPointerException.class, exception);
         assertEquals(testValue, exception.getMessage());
         exceptionHolder.setValue(null);
         assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(emptyRunnable, exceptionHolder::setValue));
@@ -37,8 +40,8 @@ class FunctionalUtilsTest {
 
     @Test
     void testFailSafeStrategyCallable() {
-        var testValue = "FooBar";
-        var fallbackValue = "test";
+        String testValue = "FooBar";
+        String fallbackValue = "test";
         Callable<String> throwingCallable = () -> {
             throw new NullPointerException(testValue);
         };
@@ -49,7 +52,7 @@ class FunctionalUtilsTest {
         assertTrue(exceptionHolder.containsValue());
         assertTrue(exceptionHolder.containsKey());
         Exception exception = exceptionHolder.getValue();
-        assertTrue(exception instanceof NullPointerException);
+        assertInstanceOf(NullPointerException.class, exception);
         assertEquals(testValue, exception.getMessage());
         assertEquals(fallbackValue, exceptionHolder.getKey());
         exceptionHolder.setPair(null, null);
@@ -61,7 +64,7 @@ class FunctionalUtilsTest {
 
     @Test
     void testFailSafeStrategyConsumer() {
-        var testValue = "FooBar";
+        String testValue = "FooBar";
         Consumer<String> throwingConsumer = v -> {
             throw new NullPointerException(v);
         };
@@ -72,10 +75,31 @@ class FunctionalUtilsTest {
         assertTrue(exceptionHolder.containsValue());
         assertTrue(exceptionHolder.containsKey());
         Exception exception = exceptionHolder.getValue();
-        assertTrue(exception instanceof NullPointerException);
+        assertInstanceOf(NullPointerException.class, exception);
         assertEquals(exceptionHolder.getKey(), exception.getMessage());
         exceptionHolder.setPair(null, null);
         assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(emptyConsumer, exceptionHolder::setPair).accept(testValue));
+        assertFalse(exceptionHolder.containsValue());
+        assertFalse(exceptionHolder.containsKey());
+    }
+
+    @Test
+    void testFailSafeStrategyBiConsumer() {
+        String leftTestValue = "FooBar";
+        String rightTestValue = "BarFoo";
+        BiConsumer<String, String> throwingConsumer = (l, r) -> {
+            throw new NullPointerException(l);
+        };
+        BiConsumer<String, String> emptyConsumer = FunctionalUtils.emptyBiConsumer();
+        Tuple<Tuple<String, String>, Exception> exceptionHolder = new Tuple<>();
+        assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(throwingConsumer, exceptionHolder::setPair).accept(leftTestValue, rightTestValue));
+        assertTrue(exceptionHolder.containsValue());
+        assertTrue(exceptionHolder.containsKey());
+        Exception exception = exceptionHolder.getValue();
+        assertInstanceOf(NullPointerException.class, exception);
+        assertEquals(exceptionHolder.getLeft().getLeft(), exception.getMessage());
+        exceptionHolder.setPair(null, null);
+        assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(emptyConsumer, exceptionHolder::setPair).accept(leftTestValue, rightTestValue));
         assertFalse(exceptionHolder.containsValue());
         assertFalse(exceptionHolder.containsKey());
     }
@@ -95,5 +119,28 @@ class FunctionalUtilsTest {
         assertEquals(2, filteredList.size());
         assertEquals("Foo@", filteredList.get(0));
         assertEquals("Bar@", filteredList.get(1));
+    }
+
+    @Test
+    void testFailSafeStrategyFunction() {
+        String sourceValue = "FooBar";
+        String resultValue = "BarFoo";
+        Function<String, String> throwingFunction = v -> {
+            throw new NullPointerException(v);
+        };
+        Function<String, String> emptyFunction = Function.identity();
+        Tuple<String, Exception> exceptionHolder = new Tuple<>();
+        assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(throwingFunction, () -> resultValue, exceptionHolder).apply(sourceValue));
+        assertTrue(exceptionHolder.containsValue());
+        assertTrue(exceptionHolder.containsKey());
+        Exception exception = exceptionHolder.getValue();
+        assertInstanceOf(NullPointerException.class, exception);
+        assertEquals(exceptionHolder.getLeft(), exception.getMessage());
+        assertEquals(resultValue, FunctionalUtils.failSafeStrategy(throwingFunction, () -> resultValue, exceptionHolder).apply(sourceValue));
+        exceptionHolder.setPair(null, null);
+        assertDoesNotThrow(() -> FunctionalUtils.failSafeStrategy(emptyFunction, () -> resultValue, exceptionHolder).apply(sourceValue));
+        assertFalse(exceptionHolder.containsValue());
+        assertFalse(exceptionHolder.containsKey());
+        assertEquals(sourceValue, FunctionalUtils.failSafeStrategy(emptyFunction, () -> resultValue, exceptionHolder).apply(sourceValue));
     }
 }
